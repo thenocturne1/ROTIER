@@ -1,803 +1,501 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KLS — Corporate Art Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+:root{--sf:'Libre Bodoni',Georgia,serif;--el:'Cormorant Garamond',Georgia,serif;--sn:'DM Sans',sans-serif}
+body{font-family:var(--sn);background:#fff;overflow:hidden;height:100vh;width:100%}
+::-webkit-scrollbar{width:0}
 
-const SF = "'Libre Bodoni', Georgia, serif";
-const EL = "'Cormorant Garamond', Georgia, serif";
-const SN = "'DM Sans', sans-serif";
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:99999;background:#000;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:opacity 1.2s ease}
+#splash.fade{opacity:0;pointer-events:none}
+#splash h1{font-family:var(--sf);font-size:clamp(48px,12vw,100px);font-weight:400;color:#fff;letter-spacing:0.08em}
+#splash .line{width:40px;height:1px;background:rgba(255,255,255,0.3);margin:20px 0}
+#splash p{font-family:var(--sn);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4)}
 
-const photos = [
-  "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=400&q=80",
-  "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80",
-  "https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&q=80",
-  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80",
-  "https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=400&q=80",
+/* HEADER */
+#hdr{position:fixed;top:0;left:0;right:0;z-index:10002;padding:20px 28px;display:flex;justify-content:center;align-items:center;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);transition:background 0.5s}
+#hdr.dk{background:rgba(0,0,0,0.95)}
+#hdr.dk .nb{color:#fff}
+.ni{display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center}
+@media(min-width:600px){.ni{gap:36px}}
+.nb{font-size:9px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;background:none;border:none;padding:8px 4px;color:#000;transition:opacity 0.3s;white-space:nowrap;font-family:var(--sn)}
+.nb:hover{opacity:0.5}.nb.ac{opacity:1}.nb.mu{opacity:0.4}
+
+/* MAIN */
+#main{height:100vh;width:100%;overflow-y:auto;overflow-x:hidden;background:#fff}
+
+/* HERO */
+.hero{min-height:320vh;position:relative;display:flex;flex-direction:column;align-items:center;padding:0 28px}
+.hero-img{position:absolute;overflow:hidden;z-index:0}
+.hero-img img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+#heroR{right:0;top:0;width:50vw;height:100vh;opacity:0.9}
+#heroL{left:0;top:100vh;width:50vw;height:100vh;opacity:0;transition:opacity 1.2s ease}
+.hero-center{position:sticky;top:50%;transform:translateY(-50%);width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;z-index:2}
+.hero-title{font-family:var(--sf);font-size:clamp(72px,22vw,200px);font-weight:400;line-height:0.82;letter-spacing:-0.02em;text-align:center}
+.hero-title i{font-style:italic}
+.hero-sub{font-family:var(--el);font-size:clamp(18px,3vw,32px);font-weight:300;letter-spacing:0.08em;opacity:0.6;margin-top:12px;font-style:italic}
+.intro-box{position:relative;height:120px;width:100%;max-width:500px;margin-top:32px}
+.intro-t{font-size:14px;line-height:1.5;text-align:center;position:absolute;inset:0;opacity:0;transition:opacity 0.6s}
+.intro-t.av{opacity:1}
+
+/* MANIFEST */
+.manifest{min-height:100vh;padding:120px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.manifest-inner{max-width:700px;text-align:center}
+.manifest h2{font-family:var(--sf);font-size:clamp(24px,5vw,42px);font-weight:400;line-height:1.25;letter-spacing:-0.02em;margin-bottom:48px}
+.manifest h2 i{font-style:italic;font-family:var(--el)}
+.manifest p{font-size:14px;line-height:1.8;opacity:0.75;margin-bottom:32px}
+.manifest .sig{font-family:var(--el);font-size:12px;font-style:italic;opacity:0.5}
+
+/* STATS */
+.stats{display:flex;justify-content:center;gap:60px;padding:80px 28px;background:#f5f5f5;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-n{font-family:var(--sf);font-size:clamp(48px,10vw,80px);font-weight:400;letter-spacing:-0.03em;line-height:1}
+.stat-t{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5;margin-top:12px;max-width:140px}
+
+/* STATEMENT */
+#stZone{height:150vh;position:relative}
+.st-sticky{position:sticky;top:20%;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px}
+.st-line{font-family:var(--sf);font-size:clamp(40px,11vw,100px);font-weight:400;line-height:1.1;letter-spacing:-0.03em;opacity:0;padding:5px 0}
+
+/* PARALLAX */
+.par-sec{position:relative;overflow:hidden;background:#f5f5f5;min-height:70vh}
+.par-bg{position:absolute;inset:0;z-index:1}
+.par-bg img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+.par-ct{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:100px 80px;min-height:70vh}
+.par-ct.ri{align-items:flex-end}
+.par-ct.le{align-items:flex-start}
+.par-card{background:rgba(255,255,255,0.98);padding:36px;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,0.12)}
+.par-label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.5;margin-bottom:10px}
+.par-title{font-family:var(--sf);font-size:clamp(22px,3.5vw,30px);font-weight:400;line-height:1.1;letter-spacing:-0.02em;margin-bottom:12px}
+.par-text{font-size:13px;line-height:1.6;opacity:0.8;margin-bottom:12px}
+.par-artist{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;opacity:0.6}
+
+/* TEASER */
+.teaser{padding:80px 28px;background:#f8f8f8;cursor:pointer;transition:background 0.3s}
+.teaser:hover{background:#f0f0f0}
+.teaser-in{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+@media(max-width:768px){.teaser-in{grid-template-columns:1fr}}
+.teaser h2{font-family:var(--sf);font-size:clamp(32px,7vw,56px);font-weight:300;line-height:1;margin-bottom:20px}
+.teaser h2 i{font-style:italic;font-family:var(--el)}
+.teaser p{font-size:14px;line-height:1.7;opacity:0.7;margin-bottom:16px}
+.teaser .link{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.5;transition:opacity 0.3s}
+.teaser:hover .link{opacity:1}
+.tags{display:flex;flex-wrap:wrap;gap:10px}
+.tag{font-size:11px;padding:8px 14px;background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:100px}
+
+/* METHOD */
+.method{padding:120px 28px;background:#000;color:#fff}
+.method-in{max-width:1100px;margin:0 auto}
+.method-hdr{text-align:center;margin-bottom:80px}
+.method-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.4;margin-bottom:16px}
+.method-title{font-family:var(--sf);font-size:clamp(44px,12vw,100px);font-weight:400;line-height:0.92;letter-spacing:-0.02em}
+.method-title i{font-style:italic}
+.method-scroll{display:flex;gap:2px;overflow-x:auto;padding-bottom:20px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.method-scroll::-webkit-scrollbar{display:none}
+.m-step{background:rgba(255,255,255,0.03);padding:40px 28px;min-width:220px;flex:1 0 220px}
+.m-step-n{font-size:11px;letter-spacing:0.15em;opacity:0.3;margin-bottom:20px}
+.m-step-t{font-family:var(--sf);font-size:22px;font-weight:400;margin-bottom:16px}
+.m-step-d{font-size:13px;line-height:1.6;opacity:0.6}
+
+/* CTA */
+.cta-sec{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:80px 28px;background:#000}
+.cta-title{font-family:var(--el);font-size:clamp(44px,12vw,110px);font-weight:300;line-height:0.95;text-align:center;margin-bottom:40px;color:#fff;letter-spacing:-0.02em}
+.cta-title i{font-style:italic}
+.cta-btn{padding:16px 48px;font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;border:none;cursor:pointer;background:#fff;color:#000;transition:opacity 0.3s}
+.cta-btn:hover{opacity:0.8}
+.cta-btn.inv{background:#000;color:#fff}
+
+/* OVERLAYS */
+.ov{position:fixed;inset:0;z-index:100;display:none;background:#fff;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.ov.av{display:block}
+
+/* KÜNSTLER */
+#kuenstlerOv{overflow-y:scroll!important;overflow-x:hidden!important}
+.k-track{height:1200vh;position:relative;width:100%}
+.k-name-wrap{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;pointer-events:none;text-align:center;width:90%;max-width:900px;transition:opacity 0.5s}
+.k-name{font-family:var(--sf);font-size:clamp(44px,12vw,130px);font-weight:400;letter-spacing:-0.03em;line-height:0.9;color:#000}
+.k-letter{display:inline-block;transition:font-family 0.8s ease}
+.k-sub{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;opacity:0.4;margin-top:28px}
+.k-photos{position:fixed;inset:0;z-index:10;pointer-events:none;overflow:hidden}
+.k-photo{position:absolute;transition:opacity 1.5s ease}
+.k-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+.k-grow{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;text-align:center;display:flex;flex-direction:column;align-items:center;width:100%}
+.k-grow span{font-family:var(--sf);font-weight:400;letter-spacing:-0.02em;text-transform:uppercase;margin:5px 0;color:#000;line-height:1;display:block}
+.k-hor{position:fixed;inset:0;z-index:30;display:none;align-items:center;overflow:hidden;background:#0a0a0a;pointer-events:none;transition:opacity 0.8s}
+.k-hor.vi{display:flex;opacity:1}
+.k-itrack{display:flex;align-items:center;will-change:transform;gap:4vw;padding:0 10vw}
+.k-panel{flex-shrink:0;height:75vh;position:relative;border-radius:12px;overflow:hidden}
+.k-panel.wi{width:85vw}.k-panel.na{width:75vw}
+.k-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(100%) brightness(0.7)}
+.k-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.2) 50%,transparent 100%);z-index:5}
+.k-panel-ct{position:absolute;bottom:0;left:0;right:0;padding:48px;z-index:10;color:#fff}
+.k-panel-ct.ce{bottom:50%;transform:translateY(50%);text-align:center;padding:48px 64px}
+.kp-num{font-size:11px;letter-spacing:0.3em;opacity:0.4;margin-bottom:16px;font-weight:500}
+.kp-name{font-family:var(--sf);font-size:clamp(28px,4vw,42px);font-weight:400;line-height:1.1;margin-bottom:16px;letter-spacing:-0.02em}
+.kp-desc{font-size:14px;line-height:1.7;opacity:0.7;max-width:400px}
+.kp-quote{font-family:var(--sf);font-size:clamp(24px,3.5vw,36px);line-height:1.3;font-weight:400}
+.kp-quote em{font-style:italic;opacity:0.8}
+.kp-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.kp-tag{padding:8px 16px;border:1px solid rgba(255,255,255,0.25);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.8);border-radius:2px}
+.k-cta{position:fixed;inset:0;z-index:70;display:none;flex-direction:column;justify-content:center;align-items:center;pointer-events:none;background:#000}
+.k-cta .badge{display:inline-block;padding:6px 16px;border:1px solid rgba(255,255,255,0.3);font-size:9px;letter-spacing:0.15em;text-transform:uppercase;margin:4px;color:#fff}
+
+/* REFERENZEN */
+.ref-sec{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+.ref-bg{position:absolute;inset:-20% 0;z-index:1;will-change:transform}
+.ref-bg img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+.ref-ct{position:relative;z-index:2;padding:100px 40px;width:100%}
+.ref-card{background:rgba(255,255,255,0.97);padding:48px;max-width:480px;box-shadow:0 12px 48px rgba(0,0,0,0.15)}
+.ref-card.ri{margin-left:auto}
+.ref-label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.4;margin-bottom:12px}
+.ref-title{font-family:var(--sf);font-size:clamp(28px,5vw,40px);font-weight:400;line-height:1.1;letter-spacing:-0.02em;margin-bottom:16px}
+.ref-text{font-size:14px;line-height:1.7;opacity:0.7}
+
+/* LEASING */
+.l-inner{max-width:1200px;margin:0 auto;padding:120px 28px 80px}
+.l-title{font-family:var(--sf);font-size:clamp(42px,10vw,80px);font-weight:300;line-height:1;margin-bottom:24px}
+.l-title i{font-style:italic;font-family:var(--el)}
+.l-intro{font-size:15px;line-height:1.7;opacity:0.7;max-width:700px}
+.l-sec{margin-bottom:60px}
+.l-sec-title{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;opacity:0.4;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid rgba(0,0,0,0.1)}
+.l-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.l-card{background:#fff;padding:28px 24px;border:1px solid rgba(0,0,0,0.06);transition:all 0.3s}
+.l-card:hover{border-color:rgba(0,0,0,0.15);transform:translateY(-2px)}
+.l-card-n{font-family:var(--sf);font-size:20px;font-weight:400;margin-bottom:4px}
+.l-card-s{font-size:11px;font-style:italic;opacity:0.4;margin-bottom:12px}
+.l-card-d{font-size:12px;line-height:1.6;opacity:0.7}
+.l-note{margin-top:48px;padding:24px;background:rgba(0,0,0,0.03);border-left:3px solid #000}
+.l-note p{font-size:13px;line-height:1.6;opacity:0.8}
+
+/* KONTAKT */
+.k-inner{max-width:800px;margin:0 auto;padding:140px 28px 80px}
+.k-title{font-family:var(--sf);font-size:clamp(44px,12vw,90px);font-weight:300;line-height:1;letter-spacing:-0.02em;margin-bottom:40px}
+.k-title i{font-style:italic;font-family:var(--el)}
+.k-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:40px}
+@media(max-width:600px){.k-grid{grid-template-columns:1fr}}
+.k-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.4;margin-bottom:16px}
+.k-info{font-size:15px;line-height:1.8}
+.k-info a{color:#000;text-decoration:none;border-bottom:1px solid rgba(0,0,0,0.2);transition:border-color 0.3s}
+.k-info a:hover{border-color:#000}
+.k-input{width:100%;padding:16px 0;font-size:15px;border:none;border-bottom:1px solid rgba(0,0,0,0.15);background:transparent;font-family:var(--sn);margin-bottom:24px;outline:none;transition:border-color 0.3s}
+.k-input:focus{border-color:#000}
+.k-ta{width:100%;padding:16px 0;font-size:15px;border:none;border-bottom:1px solid rgba(0,0,0,0.15);background:transparent;font-family:var(--sn);margin-bottom:24px;outline:none;resize:none;min-height:100px}
+.k-ta:focus{border-color:#000}
+#formSuccess{display:none;text-align:center;padding:60px 0}
+
+/* CHAT */
+#chatBtn{position:fixed;bottom:70px;right:20px;z-index:20000;width:56px;height:56px;border-radius:50%;background:#000;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center}
+#chatBox{position:fixed;bottom:80px;right:20px;width:380px;max-width:calc(100vw - 40px);height:520px;max-height:calc(100vh - 120px);z-index:20000;background:#fff;box-shadow:0 20px 60px rgba(0,0,0,0.2);display:none;flex-direction:column;border:1px solid rgba(0,0,0,0.1)}
+#chatBox.av{display:flex}
+#chatMsgs{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.chat-msg{display:flex}.chat-msg.u{justify-content:flex-end}.chat-msg.a{justify-content:flex-start}
+.chat-bubble{max-width:85%;padding:12px 16px;font-size:13px;line-height:1.6}
+.chat-msg.u .chat-bubble{background:#000;color:#fff;border-radius:16px 16px 4px 16px}
+.chat-msg.a .chat-bubble{background:#f5f5f5;color:#000;border-radius:16px 16px 16px 4px}
+#chatForm{padding:16px 24px;border-top:1px solid rgba(0,0,0,0.08);display:flex;gap:12px;align-items:center}
+#chatIn{flex:1;padding:12px 0;font-size:14px;border:none;outline:none;font-family:var(--sn);background:transparent}
+#chatSend{background:none;border:none;cursor:pointer;padding:4px;opacity:0.3;transition:opacity 0.2s}
+#chatSend.active{opacity:1}
+
+/* IMPRESSUM */
+#impressum{position:fixed;inset:0;z-index:30000;background:rgba(255,255,255,0.98);overflow-y:auto;display:none}
+#impressum.av{display:block}
+.imp-inner{max-width:700px;margin:0 auto;padding:100px 28px 80px}
+
+/* FOOTER */
+#foot{position:fixed;bottom:0;left:0;right:0;z-index:50;padding:18px 40px;display:flex;justify-content:space-between;align-items:center}
+#foot span,#foot a{font-size:9px;color:#000;text-decoration:none;letter-spacing:0.03em}
+#foot.dk span,#foot.dk a{color:#fff}
+.foot-r{display:flex;align-items:center;gap:12px}
+
+@media(max-width:768px){.par-ct{padding:60px 28px}}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash"><h1>KLS</h1><div class="line"></div><p>Corporate Art Services</p></div>
+
+<!-- HEADER -->
+<div id="hdr">
+<div class="ni">
+<button class="nb ac" data-v="about">KLS</button>
+<button class="nb mu" data-v="kuenstler">Künstler</button>
+<button class="nb mu" data-v="prozess">Prozess</button>
+<button class="nb mu" data-v="kreative">Referenzen</button>
+<button class="nb mu" data-v="leasing">Konditionen</button>
+<button class="nb mu" data-v="kontakt">Kontakt</button>
+</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+<!-- HERO -->
+<div class="hero">
+<div class="hero-img" id="heroR"><img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=1200&q=80" alt=""></div>
+<div class="hero-img" id="heroL"><img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&q=80" alt=""></div>
+<div class="hero-center">
+<h1 class="hero-title"><i>K</i>unst</h1>
+<p class="hero-sub">Leasing Systems</p>
+<div class="intro-box">
+<p class="intro-t av" id="i0">Kunst verändert Räume. Sie transformiert Arbeitsumgebungen, inspiriert Mitarbeiter und Kunden, und schafft Atmosphären, die in Erinnerung bleiben.</p>
+<p class="intro-t" id="i1">Wir kuratieren zeitgenössische Positionen für Unternehmen, Hotels und öffentliche Räume – mit einem Leasing-Modell, das Flexibilität und steuerliche Vorteile verbindet.</p>
+<p class="intro-t" id="i2">Jedes Werk wird individuell ausgewählt. Jede Installation professionell begleitet. Jeder Raum als Gesamtkonzept gedacht.</p>
+</div>
+</div>
+</div>
+
+<!-- MANIFEST -->
+<div class="manifest"><div class="manifest-inner">
+<h2>Kunst ist kein Dekor.<br><i>S</i>ie ist eine Haltung.</h2>
+<p>Wir glauben, dass Räume durch Kunst eine Identität gewinnen, die weit über ästhetische Aufwertung hinausgeht. Skulpturen, Malerei und Installationen schaffen Dialogräume – zwischen Werk und Betrachter, zwischen Unternehmen und Kultur.</p>
+<p class="sig">— KLS Corporate Art Services</p>
+</div></div>
+
+<!-- STATS -->
+<div class="stats">
+<div class="stat"><div class="stat-n">100%</div><div class="stat-t">steuerlich absetzbar als Betriebsausgabe</div></div>
+<div class="stat"><div class="stat-n">6–36</div><div class="stat-t">Monate flexible Vertragslaufzeit</div></div>
+<div class="stat"><div class="stat-n">∞</div><div class="stat-t">Rotation &amp; Werkwechsel möglich</div></div>
+</div>
+
+<!-- STATEMENT -->
+<div id="stZone"><div class="st-sticky"><div class="st-line" id="s0">Skulptur</div><div class="st-line" id="s1" style="font-style:italic">Malerei</div><div class="st-line" id="s2">Installation</div></div></div>
+
+<!-- PARALLAX SECTIONS -->
+<div class="par-sec"><div class="par-bg" data-parbg><img src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=1400&q=80" alt=""></div><div class="par-ct le"><div class="par-card"><div class="par-label">Skulptur</div><h3 class="par-title">Körper im Raum</h3><p class="par-text">Dreidimensionale Werke, die Architektur und Kunst in einen Dialog bringen.</p><div class="par-artist">Volker Seifried · Johannes Weiß</div></div></div></div>
+<div class="par-sec"><div class="par-bg" data-parbg><img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1400&q=80" alt=""></div><div class="par-ct ri"><div class="par-card"><div class="par-label">Malerei</div><h3 class="par-title">Farbfeld &amp; Tiefe</h3><p class="par-text">Abstrakte und figurative Positionen, die Räume durch Farbe und Textur definieren.</p><div class="par-artist">Maria Stern</div></div></div></div>
+<div class="par-sec"><div class="par-bg" data-parbg><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=80" alt=""></div><div class="par-ct le"><div class="par-card"><div class="par-label">Installation</div><h3 class="par-title">Raum als Medium</h3><p class="par-text">Ortsspezifische Interventionen, die Licht, Material und Architektur verbinden.</p><div class="par-artist">Lukas Grimm</div></div></div></div>
+
+<!-- TEASER -->
+<div class="teaser" onclick="go('leasing')"><div class="teaser-in"><div><h2><i>L</i>easing</h2><p>Kunst ohne Kapitalbindung. Leasingraten sind als Betriebsausgaben voll absetzbar.</p><span class="link">Konditionen ansehen →</span></div><div class="tags"><span class="tag">Skulptur</span><span class="tag">Malerei</span><span class="tag">Installation</span><span class="tag">Fotografie</span><span class="tag">Objekt</span><span class="tag">Rotation</span><span class="tag">Ankauf-Option</span></div></div></div>
+
+<!-- METHOD -->
+<div class="method"><div class="method-in"><div class="method-hdr"><div class="method-label">Unser Prozess</div><h2 class="method-title">Von der <i>Idee</i> zum Raum</h2></div>
+<div class="method-scroll">
+<div class="m-step"><div class="m-step-n">01</div><h3 class="m-step-t">Beratung</h3><p class="m-step-d">Wir analysieren Ihre Räume und entwickeln ein Konzept, das Architektur und Identität verbindet.</p></div>
+<div class="m-step"><div class="m-step-n">02</div><h3 class="m-step-t">Kuration</h3><p class="m-step-d">Aus unserem Netzwerk wählen wir Positionen, die zu Ihrem Raum und Ihrer Vision passen.</p></div>
+<div class="m-step"><div class="m-step-n">03</div><h3 class="m-step-t">Installation</h3><p class="m-step-d">Professioneller Transport, fachgerechte Montage und Versicherung.</p></div>
+<div class="m-step"><div class="m-step-n">04</div><h3 class="m-step-t">Betreuung</h3><p class="m-step-d">Regelmäßige Wartung, Dokumentation und Vermittlung.</p></div>
+<div class="m-step"><div class="m-step-n">05</div><h3 class="m-step-t">Rotation</h3><p class="m-step-d">Auf Wunsch tauschen wir Werke aus – neue Impulse für Ihre Räume.</p></div>
+</div></div></div>
+
+<!-- CTA -->
+<div class="cta-sec"><h2 class="cta-title">Lassen Sie<br><i>uns sprechen</i></h2><button class="cta-btn" onclick="openChat()">Beratung anfragen</button></div>
+</div>
+
+<!-- KÜNSTLER OVERLAY -->
+<div class="ov" id="kuenstlerOv">
+<div class="k-track"><div style="height:1200vh"></div></div>
+<div class="k-photos" id="kPhotos"></div>
+<div class="k-name-wrap" id="kNameWrap"><h2 class="k-name" id="kName"></h2><p class="k-sub">Kuratierte Positionen</p></div>
+<div class="k-grow" id="kGrow"><span id="gw0">Skulptur</span><span id="gw1">Malerei</span><span id="gw2">Installation</span></div>
+<div class="k-hor" id="kHor"><div class="k-itrack" id="kITrack"></div></div>
+<div class="k-cta" id="kCta"><div style="text-align:center;padding:40px">
+<h2 class="cta-title" style="margin-bottom:24px">Künstler<br><i>entdecken</i></h2>
+<div style="margin-bottom:32px"><span class="badge">Volker Seifried</span><span class="badge">Johannes Weiß</span><span class="badge">Maria Stern</span><span class="badge">Lukas Grimm</span></div>
+<button class="cta-btn" onclick="go('kontakt',{portfolio:true})">Portfolio anfragen</button>
+</div></div>
+</div>
+
+<!-- PROZESS OVERLAY -->
+<div class="ov" id="prozessOv">
+<div style="max-width:1100px;margin:0 auto;padding:120px 28px 80px">
+<div style="text-align:center;margin-bottom:100px"><div class="method-label" style="color:#000">Schritt für Schritt</div><h2 style="font-family:var(--sf);font-size:clamp(44px,12vw,100px);font-weight:400;line-height:0.92;letter-spacing:-0.02em">Der <i>Weg</i> zum Werk</h2></div>
+<div style="max-width:700px;margin:0 auto;display:grid;gap:60px" id="prozessSteps"></div>
+<div style="text-align:center;margin-top:100px"><button class="cta-btn inv" onclick="openChat()">Beratung anfragen</button></div>
+</div></div>
+
+<!-- REFERENZEN OVERLAY -->
+<div class="ov" id="kreativeOv" id2="kreativeOv"></div>
+
+<!-- LEASING OVERLAY -->
+<div class="ov" id="leasingOv"></div>
+
+<!-- KONTAKT OVERLAY -->
+<div class="ov" id="kontaktOv"></div>
+
+<!-- CHAT -->
+<button id="chatBtn" onclick="openChat()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+<div id="chatBox">
+<div style="padding:20px 24px;border-bottom:1px solid rgba(0,0,0,0.08);display:flex;justify-content:space-between;align-items:center"><div><div style="font-family:var(--sf);font-size:16px">KLS Beratung</div><div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.4;margin-top:4px">KI-Assistent</div></div><button onclick="closeChat()" style="background:none;border:none;font-size:20px;cursor:pointer;opacity:0.4;padding:4px;line-height:1">✕</button></div>
+<div id="chatMsgs"></div>
+<div id="chatForm"><input id="chatIn" placeholder="Ihre Frage..."><button id="chatSend" onclick="sendChat()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg></button></div>
+</div>
+
+<!-- IMPRESSUM -->
+<div id="impressum"><div class="imp-inner">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:60px"><h2 style="font-family:var(--sf);font-size:clamp(36px,8vw,60px);font-weight:300;line-height:1">Impressum</h2><button onclick="document.getElementById('impressum').classList.remove('av')" style="background:none;border:none;font-size:24px;cursor:pointer;opacity:0.4;padding:8px">✕</button></div>
+<div style="display:grid;gap:40px">
+<div><div class="k-label">Angaben gemäß § 5 TMG</div><p class="k-info">KLS — Corporate Art Services<br>Musterstraße 12<br>10999 Berlin</p></div>
+<div><div class="k-label">Kontakt</div><p class="k-info">Telefon: <a href="tel:+493012345678">+49 30 1234 5678</a><br>E-Mail: <a href="mailto:info@kls-art.de">info@kls-art.de</a></p></div>
+<div><div class="k-label">Vertreten durch</div><p class="k-info">Johannes Weiß</p></div>
+<div><div class="k-label">Umsatzsteuer-ID</div><p class="k-info">gemäß §27a UStG: DE XXX XXX XXX</p></div>
+<div><div class="k-label">Haftungsausschluss</div><p style="font-size:14px;line-height:1.8;opacity:0.7">Die Inhalte wurden mit größter Sorgfalt erstellt. Für Richtigkeit, Vollständigkeit und Aktualität können wir keine Gewähr übernehmen.</p></div>
+<div><div class="k-label">Urheberrecht</div><p style="font-size:14px;line-height:1.8;opacity:0.7">Die Inhalte unterliegen dem deutschen Urheberrecht. Vervielfältigung bedarf der schriftlichen Zustimmung.</p></div>
+</div></div></div>
+
+<!-- FOOTER -->
+<div id="foot"><span>© 2026 KLS — Corporate Art Services</span><div class="foot-r"><a href="https://www.instagram.com/kunstleasing.berlin/" target="_blank" rel="noopener noreferrer">Instagram</a><span style="opacity:0.4">·</span><a href="#" onclick="event.preventDefault();document.getElementById('impressum').classList.add('av')">Impressum</a></div></div>
+
+<script>
+var cur='about',hdr=document.getElementById('hdr'),main=document.getElementById('main'),foot=document.getElementById('foot');
+var SF="'Libre Bodoni',Georgia,serif",SN="'DM Sans',sans-serif";
+var photos=["https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=400&q=80","https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80","https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&q=80","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80","https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=400&q=80"];
+var panels=[
+{t:"artist",n:"01",nm:"Volker Seifried",d:"Reduktion auf das Wesentliche. Geometrische Strenge trifft organische Form.",tags:["Bronze","Stein","Holz"],img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=1200&q=80",w:1},
+{t:"quote",q:"»Skulptur ist <em>geronnener Raum</em> – sie macht sichtbar, was Architektur verschweigt.«",img:"https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=1200&q=80"},
+{t:"artist",n:"02",nm:"Johannes Weiß",d:"Organische Abstraktion in Aluminium und Bronze. Formen, die Verkörperung erforschen.",tags:["Aluminium","Bronze","Gips"],img:"https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=1200&q=80",w:1},
+{t:"quote",q:"»Kunst in Unternehmensräumen ist kein <em>Luxus</em> – sie ist eine Investition in Kultur.«",img:"https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=1200&q=80"},
+{t:"artist",n:"03",nm:"Maria Stern",d:"Abstrakte Farbfelder als Räume emotionaler Tiefe. Großformatige Leinwände.",tags:["Öl","Acryl","Großformat"],img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&q=80",w:1},
+{t:"quote",q:"»Ein Raum <em>ohne Kunst</em> ist ein Raum ohne Stimme.«",img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80"},
+{t:"artist",n:"04",nm:"Lukas Grimm",d:"Raum als Medium, Licht als Material. Ortsspezifische Installationen.",tags:["Licht","Installation","Ortsspezifisch"],img:"https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=1200&q=80",w:1},
+{t:"quote",q:"»Vier Positionen.<br><em>Ein Programm.</em><br>Ihr Raum.«",img:"https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80"}
 ];
 
-const panels = [
-  { type:"artist", num:"01", name:"Volker Seifried", desc:"Reduktion auf das Wesentliche. Geometrische Strenge trifft organische Form – Material und Raum im Dialog.", tags:["Bronze","Stein","Holz"], img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=1200&q=80", wide:true },
-  { type:"quote", quote:'»Skulptur ist <em>geronnener Raum</em> – sie macht sichtbar, was Architektur verschweigt.«', img:"https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=1200&q=80" },
-  { type:"artist", num:"02", name:"Johannes Weiß", desc:"Organische Abstraktion in Aluminium und Bronze. Formen, die Verkörperung und Zeitlichkeit erforschen.", tags:["Aluminium","Bronze","Gips"], img:"https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=1200&q=80", wide:true },
-  { type:"quote", quote:'»Kunst in Unternehmensräumen ist kein <em>Luxus</em> – sie ist eine Investition in Kultur.«', img:"https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=1200&q=80" },
-  { type:"artist", num:"03", name:"Maria Stern", desc:"Abstrakte Farbfelder als Räume emotionaler Tiefe. Großformatige Leinwände für kontemplative Atmosphären.", tags:["Öl","Acryl","Großformat"], img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&q=80", wide:true },
-  { type:"quote", quote:'»Ein Raum <em>ohne Kunst</em> ist ein Raum ohne Stimme.«', img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80" },
-  { type:"artist", num:"04", name:"Lukas Grimm", desc:"Raum als Medium, Licht als Material. Ortsspezifische Installationen, die Architektur transformieren.", tags:["Licht","Installation","Ortsspezifisch"], img:"https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=1200&q=80", wide:true },
-  { type:"quote", quote:'»Vier Positionen.<br/><em>Ein Programm.</em><br/>Ihr Raum.«', img:"https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80" },
+// SPLASH
+setTimeout(function(){document.getElementById('splash').classList.add('fade')},2000);
+setTimeout(function(){document.getElementById('splash').style.display='none'},3200);
+
+// BUILD PANELS
+var itrack=document.getElementById('kITrack');
+panels.forEach(function(p){
+var d=document.createElement('div');d.className='k-panel '+(p.w?'wi':'na');
+d.innerHTML='<img src="'+p.img+'">';
+if(p.t==='artist'){d.innerHTML+='<div class="k-panel-ct"><div class="kp-num">'+p.n+'</div><h3 class="kp-name">'+p.nm+'</h3><p class="kp-desc">'+p.d+'</p><div class="kp-tags">'+p.tags.map(function(t){return'<span class="kp-tag">'+t+'</span>'}).join('')+'</div></div>'}
+else{d.innerHTML+='<div class="k-panel-ct ce"><p class="kp-quote">'+p.q+'</p></div>'}
+itrack.appendChild(d);
+});
+
+// BUILD REFERENZEN
+var refs=[
+{img:"https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80",l:"Referenz 01",t:"Kanzlei Müller & Partner",d:"Skulpturale Intervention im Empfangsbereich. Drei Werke schaffen konzentrierte Ruhe.",ri:0},
+{img:"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1400&q=80",l:"Referenz 02",t:"Hotel Lindenberg",d:"Großformatige Malerei in Lobby und Suiten. Farbfelder als Brücke zum Erleben.",ri:1},
+{img:"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1400&q=80",l:"Referenz 03",t:"TechVentures GmbH",d:"Lichtinstallation im Hauptquartier – Rhythmus des Unternehmens in Licht übersetzt.",ri:0}
 ];
+var kov=document.getElementById('kreativeOv');
+refs.forEach(function(r){kov.innerHTML+='<div class="ref-sec"><div class="ref-bg" data-kbg><img src="'+r.img+'"></div><div class="ref-ct"><div class="ref-card'+(r.ri?' ri':'')+'"><div class="ref-label">'+r.l+'</div><h3 class="ref-title">'+r.t+'</h3><p class="ref-text">'+r.d+'</p></div></div></div>'});
 
-export default function Kunstleasing() {
-  const [splash, setSplash] = useState(true);
-  const [splashFade, setSplashFade] = useState(false);
-  const [view, setView] = useState("about");
-  const [dark, setDark] = useState(false);
-  const mainRef = useRef(null);
-  const kuenstlerRef = useRef(null);
-  const kreativeRef = useRef(null);
-  const [introIdx, setIntroIdx] = useState(0);
-  const [stOpacity, setStOpacity] = useState([0,0,0]);
-  const [p2Vis, setP2Vis] = useState(false);
-  const [p1Y, setP1Y] = useState(0);
-  const [p2Y, setP2Y] = useState(0);
-  const [bgOffsets, setBgOffsets] = useState([0,0,0]);
+// BUILD PROZESS
+var psteps=[["01","Raumanalyse & Gespräch","Wir besuchen Ihre Räume, verstehen Architektur und Unternehmenskultur."],["02","Kuratorische Auswahl","Zeitgenössische Positionen, zusammengestellt mit Visualisierungen."],["03","Vertragsgestaltung","Flexible Laufzeiten, monatliche Raten, voll absetzbar."],["04","Installation","Professioneller Transport, Montage und Beleuchtungsberatung."],["05","Betreuung & Rotation","Pflege, Vermittlung, auf Wunsch neue Werke."]];
+var ps=document.getElementById('prozessSteps');
+psteps.forEach(function(s){ps.innerHTML+='<div style="display:grid;grid-template-columns:60px 1fr;gap:28px;align-items:start"><div style="font-family:var(--sf);font-size:48px;opacity:0.15;line-height:1">'+s[0]+'</div><div><h3 style="font-family:var(--sf);font-size:24px;font-weight:400;margin-bottom:12px">'+s[1]+'</h3><p style="font-size:14px;line-height:1.8;opacity:0.65">'+s[2]+'</p></div></div>'});
 
-  // Künstler state
-  const [kNameOp, setKNameOp] = useState(1);
-  const [kWordOp, setKWordOp] = useState(0);
-  const [kWordSize, setKWordSize] = useState(2);
-  const [kHorVis, setKHorVis] = useState(false);
-  const [kHorX, setKHorX] = useState(0);
-  const [kCtaVis, setKCtaVis] = useState(false);
-  const [kCtaOp, setKCtaOp] = useState(0);
-  const [letterFonts, setLetterFonts] = useState([]);
-  const [floatingPhotos, setFloatingPhotos] = useState([]);
-  const [contactForm, setContactForm] = useState({ name:"", email:"", company:"", message:"" });
-  const [formSent, setFormSent] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMsgs, setChatMsgs] = useState([{ role:"assistant", content:"Willkommen bei KLS — Corporate Art Services. Ich bin Ihr persönlicher Berater für Kunst im Unternehmensraum. Wie kann ich Ihnen helfen?" }]);
-  const [chatInput, setChatInput] = useState("");
-  const [chatLoading, setChatLoading] = useState(false);
-  const [showImpressum, setShowImpressum] = useState(false);
-  const chatEndRef = useRef(null);
-  const flickerRef = useRef(null);
-  const photoRef = useRef(null);
+// BUILD LEASING
+document.getElementById('leasingOv').innerHTML='<div class="l-inner"><div style="margin-bottom:48px"><h2 class="l-title"><i>K</i>onditionen</h2><p class="l-intro">Transparente Konditionen für Kunst im Raum. Alle Modelle sind als Betriebsausgaben steuerlich absetzbar.</p></div><div class="l-sec"><div class="l-sec-title">Leasing-Modelle</div><div class="l-grid"><div class="l-card"><div class="l-card-n">Einzelwerk</div><div class="l-card-s">Ab 150 € / Monat</div><div class="l-card-d">Ein ausgewähltes Werk für Ihren Raum. Ideal als Einstieg.</div></div><div class="l-card"><div class="l-card-n">Raumkonzept</div><div class="l-card-s">Ab 400 € / Monat</div><div class="l-card-d">Drei bis fünf Werke, kuratorisch aufeinander abgestimmt.</div></div><div class="l-card"><div class="l-card-n">Gebäudekonzept</div><div class="l-card-s">Individuell</div><div class="l-card-d">Umfassende Kunstausstattung für ganze Etagen oder Gebäude.</div></div></div></div><div class="l-sec"><div class="l-sec-title">Inklusivleistungen</div><div class="l-grid"><div class="l-card"><div class="l-card-n">Transport</div><div class="l-card-d">Professioneller Kunsttransport. Bundesweit und international.</div></div><div class="l-card"><div class="l-card-n">Versicherung</div><div class="l-card-d">Allgefahrenversicherung (Nail-to-Nail) für die gesamte Laufzeit.</div></div><div class="l-card"><div class="l-card-n">Montage</div><div class="l-card-d">Fachgerechte Installation. Bei Bedarf mit Beleuchtungskonzept.</div></div><div class="l-card"><div class="l-card-n">Wartung</div><div class="l-card-d">Regelmäßige Kontrolle und Pflege. Bei Beschädigung: Ersatz.</div></div><div class="l-card"><div class="l-card-n">Vermittlung</div><div class="l-card-d">Werkbeschreibungen, Führungen für Mitarbeiter und Kunden.</div></div><div class="l-card"><div class="l-card-n">Ankauf-Option</div><div class="l-card-d">Am Laufzeitende Werke zum Restwert übernehmen.</div></div></div></div><div class="l-note"><p><strong>Steuerlicher Hinweis:</strong> Leasingraten sind als Betriebsausgaben voll absetzbar (§ 4 Abs. 4 EStG).</p></div><div style="text-align:center;margin-top:60px;padding-bottom:60px"><button class="cta-btn inv" onclick="openChat()">Individuelles Angebot anfragen</button></div></div>';
 
-  const navItems = [
-    { id:"about", label:"KLS" },
-    { id:"kuenstler", label:"Künstler" },
-    { id:"prozess", label:"Prozess" },
-    { id:"kreative", label:"Referenzen" },
-    { id:"leasing", label:"Konditionen" },
-    { id:"kontakt", label:"Kontakt" },
-  ];
+// BUILD KONTAKT
+document.getElementById('kontaktOv').innerHTML='<div class="k-inner"><h2 class="k-title"><i>K</i>ontakt</h2><p style="font-size:15px;line-height:1.7;opacity:0.6;max-width:500px">Lassen Sie uns über Kunst in Ihren Räumen sprechen.</p><div class="k-grid"><div><div class="k-label">Adresse</div><div class="k-info">KLS — Corporate Art Services<br>Musterstraße 12<br>10999 Berlin</div></div><div><div class="k-label">Kontakt</div><div class="k-info"><a href="mailto:info@kls-art.de">info@kls-art.de</a><br><a href="tel:+493012345678">+49 30 1234 5678</a></div></div></div><div id="kontaktForm" style="margin-top:60px"><input class="k-input" id="fName" placeholder="Name"><input class="k-input" id="fEmail" type="email" placeholder="E-Mail"><input class="k-input" id="fCompany" placeholder="Unternehmen"><textarea class="k-ta" id="fMsg" placeholder="Ihre Nachricht – erzählen Sie uns von Ihren Räumen"></textarea><button class="cta-btn inv" onclick="sendForm()">Nachricht senden</button></div><div id="formSuccess"><div style="font-size:48px;margin-bottom:20px">✓</div><h3 style="font-family:var(--sf);font-size:28px;font-weight:400;margin-bottom:16px">Vielen Dank</h3><p style="font-size:14px;line-height:1.7;opacity:0.6">Ihre Nachricht wurde gesendet. Wir melden uns in Kürze.</p></div></div>';
 
-  const goTo = useCallback((v, opts) => {
-    setView(v);
-    setDark(false);
-    setFormSent(false);
-    if (v === "kontakt") {
-      if (opts?.portfolio) {
-        setContactForm({ name:"", email:"", company:"", message:"Ich interessiere mich für Ihr Künstler-Portfolio und möchte gerne mehr über die verfügbaren Werke erfahren." });
-      } else {
-        setContactForm(prev => ({ ...prev }));
-      }
-    }
-    if (v === "kuenstler") {
-      const text = "DIEKÜNSTLER";
-      setLetterFonts(text.split("").map(() => SF));
-      setKNameOp(1); setKWordOp(0); setKWordSize(2);
-      setKHorVis(false); setKHorX(0); setKCtaVis(false); setKCtaOp(0);
-      setFloatingPhotos([]);
-    }
-  }, []);
+// NAV
+document.querySelectorAll('.nb').forEach(function(b){b.addEventListener('click',function(){go(this.dataset.v)})});
 
-  // Auto-scroll chat
-  useEffect(() => {
-    if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior:"smooth" });
-  }, [chatMsgs, chatLoading]);
-
-  const sendChat = useCallback(async () => {
-    if (!chatInput.trim() || chatLoading) return;
-    const userMsg = chatInput.trim();
-    setChatInput("");
-    const newMsgs = [...chatMsgs, { role:"user", content: userMsg }];
-    setChatMsgs(newMsgs);
-    setChatLoading(true);
-    try {
-      const systemPrompt = `Du bist der KI-Berater von KLS — Corporate Art Services – einer Plattform für Kunstleasing, Ankauf und Beratung für Unternehmen.
-
-DEIN WISSEN:
-- Leasing-Modelle: Einzelwerk (ab 150€/Monat), Raumkonzept (ab 400€/Monat, 3-5 Werke), Gebäudekonzept (individuell)
-- Laufzeiten: 6-36 Monate, flexibel
-- Steuerlich: 100% als Betriebsausgaben absetzbar (§4 Abs.4 EStG)
-- Inklusiv: Transport, Versicherung (Nail-to-Nail), Montage, Wartung, Vermittlung, Ankauf-Option
-- Rotation: Werke können getauscht werden
-
-KÜNSTLER:
-- Volker Seifried: Skulptur (Bronze, Stein, Holz) – geometrische Strenge trifft organische Form
-- Johannes Weiß: Skulptur (Aluminium, Bronze) – organische Abstraktion, studierte bei Prof. Tony Cragg, UdK Berlin
-- Maria Stern: Malerei (Öl, Acryl, Großformat) – abstrakte Farbfelder
-- Lukas Grimm: Installation (Licht, ortsspezifisch) – Raum als Medium
-
-PROZESS: 1) Raumanalyse 2) Kuratorische Auswahl 3) Vertrag 4) Installation 5) Betreuung & Rotation
-REFERENZEN: Kanzlei Müller & Partner, Hotel Lindenberg, TechVentures GmbH
-
-STIL: Professionell, kompetent, warm. Deutsch. Max 3-4 Sätze. Bei Interesse empfiehl info@kls-art.de oder +49 30 1234 5678.`;
-
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: systemPrompt,
-          messages: newMsgs.map(m => ({ role: m.role, content: m.content })),
-        }),
-      });
-      const data = await response.json();
-      const reply = data.content?.map(c => c.text || "").join("") || "Entschuldigung, bitte kontaktieren Sie uns direkt unter info@kls-art.de.";
-      setChatMsgs(prev => [...prev, { role:"assistant", content: reply }]);
-    } catch (e) {
-      setChatMsgs(prev => [...prev, { role:"assistant", content:"Entschuldigung, es gab ein technisches Problem. Bitte kontaktieren Sie uns unter info@kls-art.de oder +49 30 1234 5678." }]);
-    }
-    setChatLoading(false);
-  }, [chatInput, chatMsgs, chatLoading]);
-
-  // Flickering letters for Künstler
-  useEffect(() => {
-    if (view !== "kuenstler") { clearInterval(flickerRef.current); clearInterval(photoRef.current); return; }
-    flickerRef.current = setInterval(() => {
-      setLetterFonts(prev => {
-        const n = [...prev];
-        const i = Math.floor(Math.random() * n.length);
-        n[i] = n[i] === SF ? SN : SF;
-        return n;
-      });
-    }, 1200);
-    photoRef.current = setInterval(() => {
-      setFloatingPhotos(prev => {
-        if (prev.length >= 3) return prev;
-        const positions = [
-          { x: 3 + Math.random() * 12, y: 5 + Math.random() * 25 },
-          { x: 55 + Math.random() * 15, y: 50 + Math.random() * 20 },
-          { x: 25 + Math.random() * 20, y: 15 + Math.random() * 30 },
-        ];
-        const pos = positions[prev.length] || { x: Math.random() * 60 + 10, y: Math.random() * 50 + 10 };
-        return [...prev, {
-          id: Date.now() + Math.random(),
-          url: photos[Math.floor(Math.random() * photos.length)],
-          x: pos.x,
-          y: pos.y,
-          w: 200 + Math.random() * 160,
-          born: Date.now(),
-        }];
-      });
-    }, 2800);
-    return () => { clearInterval(flickerRef.current); clearInterval(photoRef.current); };
-  }, [view]);
-
-  // Remove old photos
-  useEffect(() => {
-    if (view !== "kuenstler") return;
-    const t = setInterval(() => {
-      setFloatingPhotos(prev => prev.filter(p => Date.now() - p.born < 5000));
-    }, 800);
-    return () => clearInterval(t);
-  }, [view]);
-
-  // Main scroll handler
-  const onMainScroll = useCallback(() => {
-    const el = mainRef.current;
-    if (!el) return;
-    const st = el.scrollTop, vh = window.innerHeight;
-    const pr = st / (320 * vh / 100);
-    setIntroIdx(Math.min(2, Math.floor(pr * 3)));
-    setP1Y(st * 0.15);
-    setP2Vis(pr > 0.3);
-    setP2Y((st - vh) * 0.1);
-
-    // Statement
-    const sz = document.getElementById("stZone");
-    if (sz) {
-      const r = sz.getBoundingClientRect();
-      if (r.top < vh && r.bottom > 0) {
-        const sp = (vh - r.top) / (vh + r.height);
-        const ops = [0,1,2].map(i => {
-          const ls = 0.2 + i * 0.15, le = ls + 0.2;
-          if (sp > ls && sp < le) return Math.min(1, (sp - ls) / 0.1);
-          if (sp >= le) return Math.max(0, 1 - (sp - le) / 0.1);
-          return 0;
-        });
-        setStOpacity(ops);
-      }
-    }
-
-    // Parallax bgs
-    const bgs = el.querySelectorAll("[data-parbg]");
-    const offsets = [];
-    bgs.forEach(bg => {
-      const s = bg.parentElement;
-      const r = s.getBoundingClientRect();
-      const p = (vh - r.top) / (vh + r.height);
-      offsets.push((p - 0.5) * 80);
-    });
-    setBgOffsets(offsets);
-  }, []);
-
-  // Künstler scroll handler
-  const onKuenstlerScroll = useCallback(() => {
-    const el = kuenstlerRef.current;
-    if (!el) return;
-    const st = el.scrollTop;
-    const th = 1200 * window.innerHeight / 100;
-    const pr = st / th;
-
-    // Phase 1: Name
-    if (pr < 0.05) { setKNameOp(1 - pr / 0.05); } else { setKNameOp(0); }
-
-    // Phase 2: Growing words
-    if (pr >= 0.04 && pr < 0.10) {
-      const gp = (pr - 0.04) / 0.06;
-      const fp = pr > 0.08 ? (pr - 0.08) / 0.02 : 0;
-      setKWordOp(1 - fp);
-      setKWordSize(3 + 12 * Math.min(1, gp));
-    } else {
-      setKWordOp(0);
-    }
-
-    // Phase 3: Horizontal
-    if (pr >= 0.10 && pr <= 0.90) {
-      setKHorVis(true);
-      setKHorX(-((pr - 0.10) / 0.80) * 8 * 84);
-      setKCtaVis(false);
-      setDark(true);
-    } else if (pr < 0.10) {
-      setKHorVis(false);
-      setDark(false);
-    }
-
-    // Phase 4: CTA
-    if (pr > 0.88) {
-      setKHorVis(false);
-      setKCtaVis(true);
-      setKCtaOp((pr - 0.88) / 0.12);
-      setDark(true);
-    } else {
-      setKCtaOp(0);
-      setKCtaVis(false);
-    }
-  }, []);
-
-  // Kreative parallax
-  const onKreativeScroll = useCallback(() => {
-    const el = kreativeRef.current;
-    if (!el) return;
-    const vh = window.innerHeight;
-    el.querySelectorAll("[data-kbg]").forEach(bg => {
-      const s = bg.parentElement;
-      const r = s.getBoundingClientRect();
-      const p = (vh - r.top) / (vh + r.height);
-      bg.style.transform = `translateY(${(p - 0.5) * 80}px)`;
-    });
-  }, []);
-
-  // Splash screen timer
-  useEffect(() => {
-    const t1 = setTimeout(() => setSplashFade(true), 2000);
-    const t2 = setTimeout(() => setSplash(false), 3200);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
-
-  const stWords = ["Skulptur", "Malerei", "Installation"];
-  const introTexts = [
-    "Kunst verändert Räume. Sie transformiert Arbeitsumgebungen, inspiriert Mitarbeiter und Kunden, und schafft Atmosphären, die in Erinnerung bleiben.",
-    "Wir kuratieren zeitgenössische Positionen für Unternehmen, Hotels und öffentliche Räume – mit einem Leasing-Modell, das Flexibilität und steuerliche Vorteile verbindet.",
-    "Jedes Werk wird individuell ausgewählt. Jede Installation professionell begleitet. Jeder Raum als Gesamtkonzept gedacht.",
-  ];
-
-  const isAbout = view === "about";
-
-  return (
-    <div style={{ width:"100%", height:"100vh", fontFamily:SN, background:"#fff", overflow:"hidden", position:"relative" }}>
-      <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-
-      {/* SPLASH SCREEN */}
-      {splash && (
-        <div style={{
-          position:"fixed", inset:0, zIndex:99999, background:"#000",
-          display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center",
-          opacity: splashFade ? 0 : 1,
-          transition:"opacity 1.2s ease",
-          pointerEvents: splashFade ? "none" : "auto",
-        }}>
-          <h1 style={{
-            fontFamily:SF, fontSize:"clamp(48px,12vw,100px)", fontWeight:400,
-            color:"#fff", letterSpacing:"0.08em", lineHeight:1, textAlign:"center",
-          }}>KLS</h1>
-          <div style={{ width:40, height:1, background:"rgba(255,255,255,0.3)", margin:"20px 0" }} />
-          <p style={{
-            fontFamily:SN, fontSize:11, letterSpacing:"0.2em", textTransform:"uppercase",
-            color:"rgba(255,255,255,0.4)", marginTop:0,
-          }}>Corporate Art Services</p>
-        </div>
-      )}
-
-      {/* HEADER */}
-      <div style={{ position:"fixed", top:0, left:0, right:0, zIndex:10002, padding:"20px 28px", display:"flex", justifyContent:"center", alignItems:"center", background: dark ? "rgba(0,0,0,0.95)" : "rgba(255,255,255,0.97)", backdropFilter:"blur(8px)", transition:"background 0.5s" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:28, flexWrap:"wrap", justifyContent:"center" }}>
-          {navItems.map(n => (
-            <button key={n.id} onClick={() => goTo(n.id)} style={{ fontSize:9, fontWeight:500, letterSpacing:"0.14em", textTransform:"uppercase", cursor:"pointer", background:"none", border:"none", padding:"8px 4px", color: dark ? "#fff" : "#000", transition:"opacity 0.3s", whiteSpace:"nowrap", opacity: view === n.id ? 1 : 0.4, fontFamily:SN }}>
-              {n.italic ? <><span style={{ fontStyle:"italic", fontFamily:EL }}>{n.italic}</span>{n.label.slice(1)}</> : n.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ===== ABOUT / MAIN ===== */}
-      {isAbout && (
-        <div ref={mainRef} onScroll={onMainScroll} style={{ height:"100vh", width:"100%", overflowY:"auto", overflowX:"hidden", background:"#fff" }}>
-          {/* Hero */}
-          <div style={{ minHeight:"320vh", position:"relative", display:"flex", flexDirection:"column", alignItems:"center", padding:"0 28px" }}>
-            {/* Right image - absolute, screen-sized, scrolls away with content */}
-            <div style={{ position:"absolute", right:0, top:0, width:"50vw", height:"100vh", overflow:"hidden", zIndex:0 }}>
-              <img src="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=1200&q=80" alt="" style={{ width:"100%", height:"100%", objectFit:"cover", filter:"grayscale(100%)", opacity:0.9 }} />
-            </div>
-            {/* Left image - absolute, screen-sized, positioned at 100vh, scrolls away */}
-            <div style={{ position:"absolute", left:0, top:"100vh", width:"50vw", height:"100vh", overflow:"hidden", zIndex:0, opacity: p2Vis ? 0.9 : 0, transition:"opacity 1.2s ease" }}>
-              <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&q=80" alt="" style={{ width:"100%", height:"100%", objectFit:"cover", filter:"grayscale(100%)" }} />
-            </div>
-            <div style={{ position:"sticky", top:"50%", transform:"translateY(-50%)", width:"100%", maxWidth:900, display:"flex", flexDirection:"column", alignItems:"center", zIndex:2 }}>
-              <h1 style={{ fontFamily:SF, fontSize:"clamp(72px,22vw,200px)", fontWeight:400, lineHeight:0.82, letterSpacing:"-0.02em", textAlign:"center" }}>
-                <span style={{ fontStyle:"italic" }}>K</span>unst
-              </h1>
-              <p style={{ fontFamily:EL, fontSize:"clamp(18px,3vw,32px)", fontWeight:300, letterSpacing:"0.08em", opacity:0.6, marginTop:12, fontStyle:"italic" }}>Leasing Systems</p>
-              <div style={{ position:"relative", height:120, width:"100%", maxWidth:500, marginTop:32 }}>
-                {introTexts.map((t,i) => (
-                  <p key={i} style={{ fontSize:14, lineHeight:1.5, textAlign:"center", position:"absolute", top:0, left:0, right:0, opacity: i === introIdx ? 1 : 0, transition:"opacity 0.6s" }}>{t}</p>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Manifest */}
-          <div style={{ minHeight:"100vh", padding:"120px 28px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
-            <div style={{ maxWidth:700, textAlign:"center" }}>
-              <h2 style={{ fontFamily:SF, fontSize:"clamp(24px,5vw,42px)", fontWeight:400, lineHeight:1.25, letterSpacing:"-0.02em", marginBottom:48 }}>
-                Kunst ist kein Dekor.<br/><span style={{ fontStyle:"italic", fontFamily:EL }}>S</span>ie ist eine Haltung.
-              </h2>
-              <p style={{ fontSize:14, lineHeight:1.8, opacity:0.75, marginBottom:32 }}>Wir glauben, dass Räume durch Kunst eine Identität gewinnen, die weit über ästhetische Aufwertung hinausgeht. Skulpturen, Malerei und Installationen schaffen Dialogräume – zwischen Werk und Betrachter, zwischen Unternehmen und Kultur.</p>
-              <p style={{ fontFamily:EL, fontSize:12, fontStyle:"italic", opacity:0.5 }}>— KLS Corporate Art Services</p>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div style={{ display:"flex", justifyContent:"center", gap:60, padding:"80px 28px", background:"#f5f5f5", flexWrap:"wrap" }}>
-            {[["100%","steuerlich absetzbar als Betriebsausgabe"],["6–36","Monate flexible Vertragslaufzeit"],["∞","Rotation & Werkwechsel möglich"]].map(([n,t],i) => (
-              <div key={i} style={{ textAlign:"center" }}>
-                <div style={{ fontFamily:SF, fontSize:"clamp(48px,10vw,80px)", fontWeight:400, letterSpacing:"-0.03em", lineHeight:1 }}>{n}</div>
-                <div style={{ fontSize:11, letterSpacing:"0.1em", textTransform:"uppercase", opacity:0.5, marginTop:12, maxWidth:140 }}>{t}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Statement Zone */}
-          <div id="stZone" style={{ height:"150vh", position:"relative" }}>
-            <div style={{ position:"sticky", top:"20%", minHeight:"60vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"40px 28px" }}>
-              {stWords.map((w,i) => (
-                <div key={i} style={{ fontFamily:SF, fontSize:"clamp(40px,11vw,100px)", fontWeight:400, lineHeight:1.1, letterSpacing:"-0.03em", opacity:stOpacity[i], padding:"5px 0", fontStyle: i===1 ? "italic" : "normal" }}>{w}</div>
-              ))}
-            </div>
-          </div>
-
-          {/* Parallax Sections */}
-          {[
-            { img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=1400&q=80", label:"Skulptur", title:"Körper im Raum", text:"Dreidimensionale Werke, die Architektur und Kunst in einen Dialog bringen.", artist:"Volker Seifried · Johannes Weiß", right:false },
-            { img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1400&q=80", label:"Malerei", title:"Farbfeld & Tiefe", text:"Abstrakte und figurative Positionen, die Räume durch Farbe, Textur und kompositorische Spannung definieren.", artist:"Maria Stern", right:true },
-            { img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=80", label:"Installation", title:"Raum als Medium", text:"Ortsspezifische Interventionen, die Licht, Material und Architektur zu einem Gesamterlebnis verbinden.", artist:"Lukas Grimm", right:false },
-          ].map((s,i) => (
-            <div key={i} style={{ position:"relative", overflow:"hidden", background:"#f5f5f5", minHeight:"70vh" }}>
-              <div data-parbg="1" style={{ position:"absolute", top:0, left:0, right:0, bottom:0, zIndex:1, transform:`translateY(${bgOffsets[i]||0}px)` }}>
-                <img src={s.img} alt="" style={{ width:"100%", height:"100%", objectFit:"cover", filter:"grayscale(100%)" }} />
-              </div>
-              <div style={{ position:"relative", zIndex:2, display:"flex", flexDirection:"column", justifyContent:"center", alignItems: s.right ? "flex-end" : "flex-start", padding:"100px 80px", minHeight:"70vh" }}>
-                <div style={{ background:"rgba(255,255,255,0.98)", padding:36, maxWidth:420, boxShadow:"0 8px 32px rgba(0,0,0,0.12)" }}>
-                  <div style={{ fontSize:9, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.5, marginBottom:10 }}>{s.label}</div>
-                  <h3 style={{ fontFamily:SF, fontSize:"clamp(22px,3.5vw,30px)", fontWeight:400, lineHeight:1.1, letterSpacing:"-0.02em", marginBottom:12 }}>{s.title}</h3>
-                  <p style={{ fontSize:13, lineHeight:1.6, opacity:0.8, marginBottom:12 }}>{s.text}</p>
-                  <div style={{ fontSize:10, fontWeight:500, letterSpacing:"0.08em", textTransform:"uppercase", opacity:0.6 }}>{s.artist}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* Leasing Teaser */}
-          <div onClick={() => goTo("leasing")} style={{ padding:"80px 28px", background:"#f8f8f8", cursor:"pointer", transition:"background 0.3s" }}>
-            <div style={{ maxWidth:1000, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr", gap:40, alignItems:"center" }}>
-              <div>
-                <h2 style={{ fontFamily:SF, fontSize:"clamp(32px,7vw,56px)", fontWeight:300, lineHeight:1, marginBottom:20 }}>
-                  <span style={{ fontStyle:"italic", fontFamily:EL }}>L</span>easing
-                </h2>
-                <p style={{ fontSize:14, lineHeight:1.7, opacity:0.7, marginBottom:16 }}>Kunst ohne Kapitalbindung. Leasingraten sind als Betriebsausgaben voll absetzbar.</p>
-                <span style={{ fontSize:12, letterSpacing:"0.1em", textTransform:"uppercase", opacity:0.5 }}>Konditionen ansehen →</span>
-              </div>
-              <div style={{ display:"flex", flexWrap:"wrap", gap:10 }}>
-                {["Skulptur","Malerei","Installation","Fotografie","Objekt","Kunst am Bau","Rotation","Ankauf-Option"].map(t => (
-                  <span key={t} style={{ fontSize:11, padding:"8px 14px", background:"#fff", border:"1px solid rgba(0,0,0,0.08)", borderRadius:100 }}>{t}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Method */}
-          <div style={{ padding:"120px 28px", background:"#000", color:"#fff" }}>
-            <div style={{ maxWidth:1100, margin:"0 auto" }}>
-              <div style={{ textAlign:"center", marginBottom:100 }}>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:16 }}>Unser Prozess</div>
-                <h2 style={{ fontFamily:SF, fontSize:"clamp(44px,12vw,100px)", fontWeight:400, lineHeight:0.92, letterSpacing:"-0.02em" }}>Von der <span style={{ fontStyle:"italic" }}>Idee</span> zum Raum</h2>
-              </div>
-              <div style={{ display:"flex", gap:2, overflowX:"auto", marginTop:80, paddingBottom:20, WebkitOverflowScrolling:"touch", scrollbarWidth:"none" }}>
-                {[
-                  ["01","Beratung","Wir analysieren Ihre Räume und entwickeln ein Konzept, das Architektur und Identität verbindet."],
-                  ["02","Kuration","Aus unserem Netzwerk wählen wir Positionen, die zu Ihrem Raum und Ihrer Vision passen."],
-                  ["03","Installation","Professioneller Transport, fachgerechte Montage und Versicherung."],
-                  ["04","Betreuung","Regelmäßige Wartung, Dokumentation und Vermittlung."],
-                  ["05","Rotation","Auf Wunsch tauschen wir Werke aus – neue Impulse für Ihre Räume."],
-                ].map(([n,t,d]) => (
-                  <div key={n} style={{ background:"rgba(255,255,255,0.03)", padding:"40px 28px", minWidth:220, flex:"1 0 220px" }}>
-                    <div style={{ fontSize:11, letterSpacing:"0.15em", opacity:0.3, marginBottom:20 }}>{n}</div>
-                    <h3 style={{ fontFamily:SF, fontSize:22, fontWeight:400, marginBottom:16 }}>{t}</h3>
-                    <p style={{ fontSize:13, lineHeight:1.6, opacity:0.6 }}>{d}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* CTA */}
-          <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", padding:"80px 28px", background:"#000" }}>
-            <h2 style={{ fontFamily:EL, fontSize:"clamp(44px,12vw,110px)", fontWeight:300, lineHeight:0.95, textAlign:"center", marginBottom:40, color:"#fff", letterSpacing:"-0.02em" }}>Lassen Sie<br/><span style={{ fontStyle:"italic" }}>uns sprechen</span></h2>
-            <button onClick={() => setChatOpen(true)} style={{ padding:"16px 48px", fontSize:11, fontWeight:500, letterSpacing:"0.15em", textTransform:"uppercase", border:"none", cursor:"pointer", background:"#fff", color:"#000" }}>Beratung anfragen</button>
-          </div>
-        </div>
-      )}
-
-      {/* ===== KÜNSTLER ===== */}
-      {view === "kuenstler" && (
-        <div ref={kuenstlerRef} onScroll={onKuenstlerScroll} style={{ position:"fixed", inset:0, zIndex:100, overflowY:"scroll", overflowX:"hidden", background:"#fff", WebkitOverflowScrolling:"touch" }}>
-          <div style={{ height:"1200vh" }} />
-          {/* Floating photos */}
-          <div style={{ position:"fixed", inset:0, zIndex:10, pointerEvents:"none", overflow:"hidden" }}>
-            {floatingPhotos.map(p => {
-              const age = Date.now() - p.born;
-              const fadeIn = Math.min(1, age / 1200);
-              const fadeOut = age > 3800 ? Math.max(0, 1 - (age - 3800) / 1200) : 1;
-              const op = kNameOp > 0.3 ? fadeIn * fadeOut * 0.8 : 0;
-              return (
-                <div key={p.id} style={{ position:"absolute", left:`${p.x}%`, top:`${p.y}%`, width:p.w, height:p.w * 1.2, opacity:op, transition:"opacity 1.5s ease", transform:`translateY(${-age * 0.005}px)` }}>
-                  <img src={p.url} alt="" style={{ width:"100%", height:"100%", objectFit:"cover", filter:"grayscale(100%)" }} />
-                </div>
-              );
-            })}
-          </div>
-          {/* Name */}
-          <div style={{ position:"fixed", top:"50%", left:"50%", transform:"translate(-50%,-50%)", zIndex:20, pointerEvents:"none", textAlign:"center", width:"90%", maxWidth:900, opacity:kNameOp, transition:"opacity 0.5s" }}>
-            <h2 style={{ fontFamily:SF, fontSize:"clamp(44px,12vw,130px)", fontWeight:400, letterSpacing:"-0.03em", lineHeight:0.9, color:"#000" }}>
-              {["D","I","E"," ","K","Ü","N","S","T","L","E","R"].map((c,i) => (
-                c === " " ? <span key={i} style={{ display:"inline-block", width:"0.25em" }} /> :
-                <span key={i} style={{ fontFamily: letterFonts[i > 3 ? i-1 : i] || SF, display:"inline-block", transition:"font-family 0.8s ease" }}>{c}</span>
-              ))}
-            </h2>
-            <p style={{ fontSize:11, letterSpacing:"0.15em", textTransform:"uppercase", opacity:0.4, marginTop:28 }}>Kuratierte Positionen</p>
-          </div>
-          {/* Growing words */}
-          <div style={{ position:"fixed", top:"50%", left:"50%", transform:"translate(-50%,-50%)", zIndex:5, pointerEvents:"none", textAlign:"center", display:"flex", flexDirection:"column", alignItems:"center", width:"100%" }}>
-            {["Skulptur","Malerei","Installation"].map((w,i) => (
-              <span key={i} style={{ fontFamily:SF, fontWeight:400, letterSpacing:"-0.02em", textTransform:"uppercase", margin:"5px 0", opacity:kWordOp, color:"#000", fontSize:`${kWordSize}vw`, lineHeight:1, display:"block" }}>{w}</span>
-            ))}
-          </div>
-          {/* Horizontal scroll */}
-          {kHorVis && (
-            <div style={{ position:"fixed", inset:0, zIndex:30, display:"flex", alignItems:"center", overflow:"hidden", background:"#0a0a0a", pointerEvents:"none", opacity:1, transition:"opacity 0.8s" }}>
-              <div style={{ display:"flex", alignItems:"center", willChange:"transform", transform:`translateX(${kHorX}vw)`, gap:"4vw", padding:"0 10vw" }}>
-                {panels.map((p,i) => (
-                  <div key={i} style={{ flexShrink:0, width: p.wide ? "85vw" : "75vw", height:"75vh", position:"relative", borderRadius:12, overflow:"hidden" }}>
-                    <img src={p.img} alt="" style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", filter:"grayscale(100%) brightness(0.7)" }} />
-                    <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%)", zIndex:5 }} />
-                    <div style={{ position:"absolute", bottom: p.type==="quote" ? "50%" : 0, transform: p.type==="quote" ? "translateY(50%)" : "none", left:0, right:0, padding: p.type==="quote" ? "48px 64px" : 48, zIndex:10, color:"#fff", textAlign: p.type==="quote" ? "center" : "left" }}>
-                      {p.type === "artist" ? (
-                        <>
-                          <div style={{ fontSize:11, letterSpacing:"0.3em", opacity:0.4, marginBottom:16, fontWeight:500 }}>{p.num}</div>
-                          <h3 style={{ fontFamily:SF, fontSize:"clamp(28px,4vw,42px)", fontWeight:400, lineHeight:1.1, marginBottom:16, letterSpacing:"-0.02em" }}>{p.name}</h3>
-                          <p style={{ fontSize:14, lineHeight:1.7, opacity:0.7, maxWidth:400 }}>{p.desc}</p>
-                          <div style={{ display:"flex", flexWrap:"wrap", gap:8, marginTop:20 }}>
-                            {p.tags.map(t => (
-                              <span key={t} style={{ padding:"8px 16px", border:"1px solid rgba(255,255,255,0.25)", fontSize:9, letterSpacing:"0.15em", textTransform:"uppercase", color:"rgba(255,255,255,0.8)", borderRadius:2 }}>{t}</span>
-                            ))}
-                          </div>
-                        </>
-                      ) : (
-                        <p style={{ fontFamily:SF, fontSize:"clamp(24px,3.5vw,36px)", lineHeight:1.3, fontWeight:400 }} dangerouslySetInnerHTML={{ __html: p.quote }} />
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {/* CTA */}
-          {kCtaVis && (
-            <div style={{ position:"fixed", inset:0, zIndex:70, display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", background:"#000", opacity:kCtaOp, pointerEvents: kCtaOp > 0.5 ? "auto" : "none" }}>
-              <h2 style={{ fontFamily:EL, fontSize:"clamp(44px,12vw,110px)", fontWeight:300, lineHeight:0.95, textAlign:"center", marginBottom:24, color:"#fff" }}>Künstler<br/><span style={{ fontStyle:"italic" }}>entdecken</span></h2>
-              <div style={{ marginBottom:32 }}>
-                {["Volker Seifried","Johannes Weiß","Maria Stern","Lukas Grimm"].map(n => (
-                  <span key={n} style={{ display:"inline-block", padding:"6px 16px", border:"1px solid rgba(255,255,255,0.3)", fontSize:9, letterSpacing:"0.15em", textTransform:"uppercase", margin:4, color:"#fff" }}>{n}</span>
-                ))}
-              </div>
-              <button onClick={() => goTo("kontakt", { portfolio: true })} style={{ padding:"16px 48px", fontSize:11, fontWeight:500, letterSpacing:"0.15em", textTransform:"uppercase", border:"none", cursor:"pointer", background:"#fff", color:"#000" }}>Portfolio anfragen</button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ===== PROZESS ===== */}
-      {view === "prozess" && (
-        <div style={{ position:"fixed", inset:0, zIndex:100, background:"#fff", overflowY:"auto" }}>
-          <div style={{ maxWidth:1100, margin:"0 auto", padding:"120px 28px 80px" }}>
-            <div style={{ textAlign:"center", marginBottom:100 }}>
-              <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:16 }}>Schritt für Schritt</div>
-              <h2 style={{ fontFamily:SF, fontSize:"clamp(44px,12vw,100px)", fontWeight:400, lineHeight:0.92, letterSpacing:"-0.02em" }}>Der <span style={{ fontStyle:"italic" }}>Weg</span> zum Werk</h2>
-            </div>
-            <div style={{ maxWidth:700, margin:"0 auto", display:"grid", gap:60 }}>
-              {[
-                ["01","Raumanalyse & Gespräch","Wir besuchen Ihre Räume, verstehen die architektonischen Gegebenheiten und lernen Ihre Unternehmenskultur kennen."],
-                ["02","Kuratorische Auswahl","Basierend auf unserer Analyse stellen wir eine Auswahl zeitgenössischer Positionen zusammen."],
-                ["03","Vertragsgestaltung","Flexible Laufzeiten von 6 bis 36 Monaten. Monatliche Raten, die als Betriebsausgaben voll steuerlich absetzbar sind."],
-                ["04","Installation & Einrichtung","Professioneller Kunsttransport, fachgerechte Montage und Beleuchtungsberatung. Alles aus einer Hand."],
-                ["05","Betreuung & Rotation","Regelmäßige Pflege der Werke, Vermittlungsgespräche für Mitarbeiter und Gäste. Auf Wunsch Rotation."],
-              ].map(([n,t,d]) => (
-                <div key={n} style={{ display:"grid", gridTemplateColumns:"60px 1fr", gap:28, alignItems:"start" }}>
-                  <div style={{ fontFamily:SF, fontSize:48, fontWeight:400, opacity:0.15, lineHeight:1 }}>{n}</div>
-                  <div>
-                    <h3 style={{ fontFamily:SF, fontSize:24, fontWeight:400, marginBottom:12 }}>{t}</h3>
-                    <p style={{ fontSize:14, lineHeight:1.8, opacity:0.65 }}>{d}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ textAlign:"center", marginTop:100 }}>
-              <button onClick={() => setChatOpen(true)} style={{ padding:"16px 48px", fontSize:11, fontWeight:500, letterSpacing:"0.15em", textTransform:"uppercase", border:"none", cursor:"pointer", background:"#000", color:"#fff" }}>Beratung anfragen</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ===== REFERENZEN ===== */}
-      {view === "kreative" && (
-        <div ref={kreativeRef} onScroll={onKreativeScroll} style={{ position:"fixed", inset:0, zIndex:100, background:"#fff", overflowY:"auto" }}>
-          {[
-            { img:"https://images.unsplash.com/photo-1497366216548-37526070297c?w=1400&q=80", label:"Referenz 01", title:"Kanzlei Müller & Partner", text:"Skulpturale Intervention im Empfangsbereich. Drei Werke schaffen eine Atmosphäre konzentrierter Ruhe.", right:false },
-            { img:"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1400&q=80", label:"Referenz 02", title:"Hotel Lindenberg", text:"Großformatige Malerei in Lobby und Suiten. Farbfelder als Brücke zwischen Architektur und Erleben.", right:true },
-            { img:"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1400&q=80", label:"Referenz 03", title:"TechVentures GmbH", text:"Lichtinstallation im Hauptquartier – eine ortsspezifische Arbeit, die den Rhythmus des Unternehmens übersetzt.", right:false },
-          ].map((s,i) => (
-            <div key={i} style={{ position:"relative", minHeight:"100vh", display:"flex", alignItems:"center", overflow:"hidden" }}>
-              <div data-kbg="1" style={{ position:"absolute", inset:"-20% 0", zIndex:1, willChange:"transform" }}>
-                <img src={s.img} alt="" style={{ width:"100%", height:"100%", objectFit:"cover", filter:"grayscale(100%)" }} />
-              </div>
-              <div style={{ position:"relative", zIndex:2, padding:"100px 40px", width:"100%" }}>
-                <div style={{ background:"rgba(255,255,255,0.97)", padding:48, maxWidth:480, boxShadow:"0 12px 48px rgba(0,0,0,0.15)", marginLeft: s.right ? "auto" : 0 }}>
-                  <div style={{ fontSize:9, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:12 }}>{s.label}</div>
-                  <h3 style={{ fontFamily:SF, fontSize:"clamp(28px,5vw,40px)", fontWeight:400, lineHeight:1.1, letterSpacing:"-0.02em", marginBottom:16 }}>{s.title}</h3>
-                  <p style={{ fontSize:14, lineHeight:1.7, opacity:0.7 }}>{s.text}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ===== KONDITIONEN ===== */}
-      {view === "leasing" && (
-        <div style={{ position:"fixed", inset:0, zIndex:100, background:"#fff", overflowY:"auto" }}>
-          <div style={{ maxWidth:1200, margin:"0 auto", padding:"120px 28px 80px" }}>
-            <div style={{ marginBottom:48 }}>
-              <h2 style={{ fontFamily:SF, fontSize:"clamp(42px,10vw,80px)", fontWeight:300, lineHeight:1, marginBottom:24 }}>
-                <span style={{ fontStyle:"italic", fontFamily:EL }}>K</span>onditionen
-              </h2>
-              <p style={{ fontSize:15, lineHeight:1.7, opacity:0.7, maxWidth:700 }}>Transparente Konditionen für Kunst im Raum. Alle Leasing-Modelle sind als Betriebsausgaben steuerlich absetzbar.</p>
-            </div>
-            <div style={{ marginBottom:60 }}>
-              <div style={{ fontSize:11, letterSpacing:"0.15em", textTransform:"uppercase", opacity:0.4, marginBottom:24, paddingBottom:12, borderBottom:"1px solid rgba(0,0,0,0.1)" }}>Leasing-Modelle</div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:20 }}>
-                {[
-                  ["Einzelwerk","Ab 150 € / Monat","Ein ausgewähltes Werk für Ihren Raum. Ideal als Einstieg."],
-                  ["Raumkonzept","Ab 400 € / Monat","Drei bis fünf Werke, kuratorisch aufeinander abgestimmt."],
-                  ["Gebäudekonzept","Individuell","Umfassende Kunstausstattung für ganze Etagen oder Gebäude."],
-                ].map(([n,s,d]) => (
-                  <div key={n} style={{ background:"#fff", padding:"28px 24px", border:"1px solid rgba(0,0,0,0.06)", transition:"all 0.3s" }}>
-                    <div style={{ fontFamily:SF, fontSize:20, fontWeight:400, marginBottom:4 }}>{n}</div>
-                    <div style={{ fontSize:11, fontStyle:"italic", opacity:0.4, marginBottom:12 }}>{s}</div>
-                    <div style={{ fontSize:12, lineHeight:1.6, opacity:0.7 }}>{d}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{ marginBottom:60 }}>
-              <div style={{ fontSize:11, letterSpacing:"0.15em", textTransform:"uppercase", opacity:0.4, marginBottom:24, paddingBottom:12, borderBottom:"1px solid rgba(0,0,0,0.1)" }}>Inklusivleistungen</div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:20 }}>
-                {[
-                  ["Transport","Professioneller Kunsttransport. Bundesweit und international."],
-                  ["Versicherung","Allgefahrenversicherung (Nail-to-Nail) für die gesamte Vertragslaufzeit."],
-                  ["Montage","Fachgerechte Installation und Hängung. Bei Bedarf mit Beleuchtungskonzept."],
-                  ["Wartung","Regelmäßige Kontrolle und Pflege. Bei Beschädigung: Restaurierung oder Ersatz."],
-                  ["Vermittlung","Werkbeschreibungen, Führungen für Mitarbeiter und Kunden."],
-                  ["Ankauf-Option","Am Ende der Laufzeit können Sie Werke zum reduzierten Restwert übernehmen."],
-                ].map(([n,d]) => (
-                  <div key={n} style={{ background:"#fff", padding:"28px 24px", border:"1px solid rgba(0,0,0,0.06)" }}>
-                    <div style={{ fontFamily:SF, fontSize:20, fontWeight:400, marginBottom:4 }}>{n}</div>
-                    <div style={{ fontSize:12, lineHeight:1.6, opacity:0.7 }}>{d}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div style={{ padding:24, background:"rgba(0,0,0,0.03)", borderLeft:"3px solid #000" }}>
-              <p style={{ fontSize:13, lineHeight:1.6, opacity:0.8 }}><strong>Steuerlicher Hinweis:</strong> Leasingraten für Kunst sind als Betriebsausgaben in voller Höhe steuerlich absetzbar (§ 4 Abs. 4 EStG).</p>
-            </div>
-            <div style={{ textAlign:"center", marginTop:60, paddingBottom:60 }}>
-              <button onClick={() => setChatOpen(true)} style={{ padding:"16px 48px", fontSize:11, fontWeight:500, letterSpacing:"0.15em", textTransform:"uppercase", border:"none", cursor:"pointer", background:"#000", color:"#fff" }}>Individuelles Angebot anfragen</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ===== KONTAKT ===== */}
-      {view === "kontakt" && (
-        <div style={{ position:"fixed", inset:0, zIndex:100, background:"#fff", overflowY:"auto" }}>
-          <div style={{ maxWidth:800, margin:"0 auto", padding:"140px 28px 80px" }}>
-            <h2 style={{ fontFamily:SF, fontSize:"clamp(44px,12vw,90px)", fontWeight:300, lineHeight:1, letterSpacing:"-0.02em", marginBottom:40 }}>
-              <span style={{ fontStyle:"italic", fontFamily:EL }}>K</span>ontakt
-            </h2>
-            <p style={{ fontSize:15, lineHeight:1.7, opacity:0.6, maxWidth:500 }}>Lassen Sie uns über Kunst in Ihren Räumen sprechen.</p>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:60, marginTop:40 }}>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:16 }}>Adresse</div>
-                <div style={{ fontSize:15, lineHeight:1.8 }}>KLS — Corporate Art Services<br/>Musterstraße 12<br/>10999 Berlin</div>
-              </div>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:16 }}>Kontakt</div>
-                <div style={{ fontSize:15, lineHeight:1.8 }}>
-                  <a href="mailto:info@kls-art.de" style={{ color:"#000", textDecoration:"none", borderBottom:"1px solid rgba(0,0,0,0.2)" }}>info@kls-art.de</a><br/>
-                  <a href="tel:+493012345678" style={{ color:"#000", textDecoration:"none", borderBottom:"1px solid rgba(0,0,0,0.2)" }}>+49 30 1234 5678</a>
-                </div>
-              </div>
-            </div>
-            {formSent ? (
-              <div style={{ marginTop:60, padding:"60px 0", textAlign:"center" }}>
-                <div style={{ fontSize:48, marginBottom:20 }}>✓</div>
-                <h3 style={{ fontFamily:SF, fontSize:28, fontWeight:400, marginBottom:16 }}>Vielen Dank</h3>
-                <p style={{ fontSize:14, lineHeight:1.7, opacity:0.6 }}>Ihre Nachricht wurde gesendet. Wir melden uns in Kürze bei Ihnen.</p>
-              </div>
-            ) : (
-              <div style={{ marginTop:60 }}>
-                <input value={contactForm.name} onChange={e => setContactForm(p => ({...p, name:e.target.value}))} placeholder="Name" style={{ width:"100%", padding:"16px 0", fontSize:15, border:"none", borderBottom:"1px solid rgba(0,0,0,0.15)", background:"transparent", fontFamily:SN, marginBottom:24, outline:"none" }} />
-                <input value={contactForm.email} onChange={e => setContactForm(p => ({...p, email:e.target.value}))} placeholder="E-Mail" type="email" style={{ width:"100%", padding:"16px 0", fontSize:15, border:"none", borderBottom:"1px solid rgba(0,0,0,0.15)", background:"transparent", fontFamily:SN, marginBottom:24, outline:"none" }} />
-                <input value={contactForm.company} onChange={e => setContactForm(p => ({...p, company:e.target.value}))} placeholder="Unternehmen" style={{ width:"100%", padding:"16px 0", fontSize:15, border:"none", borderBottom:"1px solid rgba(0,0,0,0.15)", background:"transparent", fontFamily:SN, marginBottom:24, outline:"none" }} />
-                <textarea value={contactForm.message} onChange={e => setContactForm(p => ({...p, message:e.target.value}))} placeholder="Ihre Nachricht – erzählen Sie uns von Ihren Räumen" style={{ width:"100%", padding:"16px 0", fontSize:15, border:"none", borderBottom:"1px solid rgba(0,0,0,0.15)", background:"transparent", fontFamily:SN, marginBottom:24, outline:"none", resize:"none", minHeight:100 }} />
-                <button onClick={() => {
-                  const subject = encodeURIComponent("Anfrage KLS" + (contactForm.company ? " – " + contactForm.company : ""));
-                  const body = encodeURIComponent(
-                    (contactForm.name ? "Name: " + contactForm.name + "\n" : "") +
-                    (contactForm.email ? "E-Mail: " + contactForm.email + "\n" : "") +
-                    (contactForm.company ? "Unternehmen: " + contactForm.company + "\n\n" : "\n") +
-                    contactForm.message
-                  );
-                  window.open("mailto:info@kls-art.de?subject=" + subject + "&body=" + body, "_blank");
-                  setFormSent(true);
-                }} style={{ padding:"16px 48px", fontSize:11, fontWeight:500, letterSpacing:"0.15em", textTransform:"uppercase", border:"none", cursor:"pointer", background:"#000", color:"#fff", transition:"opacity 0.3s" }}>Nachricht senden</button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* KI CHAT WIDGET */}
-      {chatOpen && (
-        <div style={{ position:"fixed", bottom:80, right:20, width:380, maxWidth:"calc(100vw - 40px)", height:520, maxHeight:"calc(100vh - 120px)", zIndex:20000, background:"#fff", boxShadow:"0 20px 60px rgba(0,0,0,0.2)", display:"flex", flexDirection:"column", borderRadius:0, border:"1px solid rgba(0,0,0,0.1)" }}>
-          {/* Chat Header */}
-          <div style={{ padding:"20px 24px", borderBottom:"1px solid rgba(0,0,0,0.08)", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-            <div>
-              <div style={{ fontFamily:SF, fontSize:16, fontWeight:400 }}>KLS Beratung</div>
-              <div style={{ fontSize:10, letterSpacing:"0.1em", textTransform:"uppercase", opacity:0.4, marginTop:4 }}>KI-Assistent</div>
-            </div>
-            <button onClick={() => setChatOpen(false)} style={{ background:"none", border:"none", fontSize:20, cursor:"pointer", opacity:0.4, padding:4, lineHeight:1 }}>✕</button>
-          </div>
-          {/* Chat Messages */}
-          <div style={{ flex:1, overflowY:"auto", padding:"20px 24px", display:"flex", flexDirection:"column", gap:16 }}>
-            {chatMsgs.map((m, i) => (
-              <div key={i} style={{ display:"flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
-                <div style={{ maxWidth:"85%", padding:"12px 16px", background: m.role === "user" ? "#000" : "#f5f5f5", color: m.role === "user" ? "#fff" : "#000", fontSize:13, lineHeight:1.6, borderRadius: m.role === "user" ? "16px 16px 4px 16px" : "16px 16px 16px 4px" }}>
-                  {m.content}
-                </div>
-              </div>
-            ))}
-            {chatLoading && (
-              <div style={{ display:"flex", justifyContent:"flex-start" }}>
-                <div style={{ padding:"12px 16px", background:"#f5f5f5", fontSize:13, borderRadius:"16px 16px 16px 4px" }}>
-                  <span style={{ opacity:0.5 }}>Einen Moment...</span>
-                </div>
-              </div>
-            )}
-            <div ref={chatEndRef} />
-          </div>
-          {/* Chat Input */}
-          <div style={{ padding:"16px 24px", borderTop:"1px solid rgba(0,0,0,0.08)", display:"flex", gap:12, alignItems:"center" }}>
-            <input
-              value={chatInput}
-              onChange={e => setChatInput(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendChat(); } }}
-              placeholder="Ihre Frage..."
-              style={{ flex:1, padding:"12px 0", fontSize:14, border:"none", outline:"none", fontFamily:SN, background:"transparent" }}
-            />
-            <button onClick={sendChat} disabled={chatLoading || !chatInput.trim()} style={{ background:"none", border:"none", cursor: chatInput.trim() ? "pointer" : "default", padding:4, opacity: chatInput.trim() ? 1 : 0.2, transition:"opacity 0.2s" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* CHAT TRIGGER BUTTON (when closed) */}
-      {!chatOpen && (
-        <button onClick={() => setChatOpen(true)} style={{ position:"fixed", bottom:70, right:20, zIndex:20000, width:56, height:56, borderRadius:"50%", background:"#000", color:"#fff", border:"none", cursor:"pointer", boxShadow:"0 4px 20px rgba(0,0,0,0.3)", display:"flex", alignItems:"center", justifyContent:"center", transition:"transform 0.2s" }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        </button>
-      )}
-
-      {/* IMPRESSUM OVERLAY */}
-      {showImpressum && (
-        <div style={{ position:"fixed", inset:0, zIndex:30000, background:"rgba(255,255,255,0.98)", overflowY:"auto" }}>
-          <div style={{ maxWidth:700, margin:"0 auto", padding:"100px 28px 80px" }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:60 }}>
-              <h2 style={{ fontFamily:SF, fontSize:"clamp(36px,8vw,60px)", fontWeight:300, lineHeight:1 }}>Impressum</h2>
-              <button onClick={() => setShowImpressum(false)} style={{ background:"none", border:"none", fontSize:24, cursor:"pointer", opacity:0.4, padding:8 }}>✕</button>
-            </div>
-            <div style={{ display:"grid", gap:40 }}>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:12 }}>Angaben gemäß § 5 TMG</div>
-                <p style={{ fontSize:15, lineHeight:1.8 }}>KLS — Corporate Art Services<br/>Musterstraße 12<br/>10999 Berlin</p>
-              </div>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:12 }}>Kontakt</div>
-                <p style={{ fontSize:15, lineHeight:1.8 }}>
-                  Telefon: <a href="tel:+493012345678" style={{ color:"#000", textDecoration:"none", borderBottom:"1px solid rgba(0,0,0,0.2)" }}>+49 30 1234 5678</a><br/>
-                  E-Mail: <a href="mailto:info@kls-art.de" style={{ color:"#000", textDecoration:"none", borderBottom:"1px solid rgba(0,0,0,0.2)" }}>info@kls-art.de</a>
-                </p>
-              </div>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:12 }}>Vertreten durch</div>
-                <p style={{ fontSize:15, lineHeight:1.8 }}>Johannes Weiß</p>
-              </div>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:12 }}>Umsatzsteuer-ID</div>
-                <p style={{ fontSize:15, lineHeight:1.8 }}>Umsatzsteuer-Identifikationsnummer gemäß §27a Umsatzsteuergesetz:<br/>DE XXX XXX XXX</p>
-              </div>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:12 }}>Haftungsausschluss</div>
-                <p style={{ fontSize:14, lineHeight:1.8, opacity:0.7 }}>Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.</p>
-              </div>
-              <div>
-                <div style={{ fontSize:10, letterSpacing:"0.2em", textTransform:"uppercase", opacity:0.4, marginBottom:12 }}>Urheberrecht</div>
-                <p style={{ fontSize:14, lineHeight:1.8, opacity:0.7 }}>Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Footer */}
-      <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:50, padding:"18px 40px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <span style={{ fontSize:9, letterSpacing:"0.03em", color: dark ? "#fff" : "#000" }}>© 2026 KLS — Corporate Art Services</span>
-        <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-          <a href="https://www.instagram.com/kunstleasing.berlin/" target="_blank" rel="noopener noreferrer" style={{ fontSize:9, color: dark ? "#fff" : "#000", textDecoration:"none", cursor:"pointer" }}>Instagram</a>
-          <span style={{ opacity:0.4, color: dark ? "#fff" : "#000" }}>·</span>
-          <span onClick={() => setShowImpressum(true)} style={{ fontSize:9, color: dark ? "#fff" : "#000", cursor:"pointer" }}>Impressum</span>
-        </div>
-      </div>
-    </div>
-  );
+function go(v,opts){
+document.querySelectorAll('.ov').forEach(function(o){o.classList.remove('av')});
+hdr.classList.remove('dk');foot.classList.remove('dk');
+if(v==='about'){main.style.display='block';cur='about'}
+else{main.style.display='none';cur=v;
+var el=document.getElementById(v+'Ov');if(el){el.classList.add('av');el.scrollTop=0}
+if(v==='kuenstler'){hdr.classList.remove('dk');initKuenstler()}}
+if(v==='kontakt'&&opts&&opts.portfolio){setTimeout(function(){var m=document.getElementById('fMsg');if(m)m.value='Ich interessiere mich für Ihr Künstler-Portfolio und möchte gerne mehr über die verfügbaren Werke erfahren.'},100)}
+updateNav();
 }
+
+function updateNav(){document.querySelectorAll('.nb').forEach(function(b){var v=b.dataset.v;if(v===cur||(cur==='about'&&v==='about')){b.className='nb ac'}else{b.className='nb mu'}})}
+
+// MAIN SCROLL
+main.addEventListener('scroll',function(){
+var st=this.scrollTop,vh=window.innerHeight,pr=st/(320*vh/100);
+var idx=Math.min(2,Math.floor(pr*3));
+['i0','i1','i2'].forEach(function(id,i){document.getElementById(id).classList.toggle('av',i===idx)});
+document.getElementById('heroL').style.opacity=pr>0.3?0.9:0;
+var sz=document.getElementById('stZone'),r=sz.getBoundingClientRect();
+if(r.top<vh&&r.bottom>0){var sp=(vh-r.top)/(vh+r.height);for(var i=0;i<3;i++){var l=document.getElementById('s'+i),ls=0.2+i*0.15,le=ls+0.2;if(sp>ls&&sp<le)l.style.opacity=Math.min(1,(sp-ls)/0.1);else if(sp>=le)l.style.opacity=Math.max(0,1-(sp-le)/0.1);else l.style.opacity=0}}
+document.querySelectorAll('[data-parbg]').forEach(function(bg){var s=bg.parentElement,rc=s.getBoundingClientRect(),p=(vh-rc.top)/(vh+rc.height);bg.style.transform='translateY('+((p-0.5)*80)+'px)'});
+});
+
+// KÜNSTLER
+var kFlicker,kPhotoInt,kPhotos=[];
+function initKuenstler(){
+var ne=document.getElementById('kName'),t='DIE KÜNSTLER';ne.innerHTML='';
+t.split('').forEach(function(c,i){if(c===' '){ne.innerHTML+='<span style="display:inline-block;width:0.25em"></span>'}else{var s=document.createElement('span');s.className='k-letter';s.textContent=c;s.style.fontFamily=SF;ne.appendChild(s)}});
+clearInterval(kFlicker);clearInterval(kPhotoInt);
+kFlicker=setInterval(function(){if(cur!=='kuenstler'){clearInterval(kFlicker);return}
+var ls=document.querySelectorAll('.k-letter');var r=Math.floor(Math.random()*ls.length);
+ls[r].style.fontFamily=ls[r].style.fontFamily.indexOf('Bodoni')!==-1?SN:SF},1200);
+kPhotos=[];document.getElementById('kPhotos').innerHTML='';
+var positions=[{x:3,y:5,rx:12,ry:25},{x:55,y:50,rx:15,ry:20},{x:25,y:15,rx:20,ry:30}];
+kPhotoInt=setInterval(function(){if(cur!=='kuenstler'){clearInterval(kPhotoInt);return}
+if(kPhotos.length>=3)return;
+var pos=positions[kPhotos.length];var px=pos.x+Math.random()*pos.rx,py=pos.y+Math.random()*pos.ry;
+var sz=200+Math.random()*160;
+var ph=document.createElement('div');ph.className='k-photo';ph.style.cssText='left:'+px+'%;top:'+py+'%;width:'+sz+'px;height:'+(sz*1.2)+'px;opacity:0';
+ph.innerHTML='<img src="'+photos[Math.floor(Math.random()*photos.length)]+'">';
+document.getElementById('kPhotos').appendChild(ph);
+var born=Date.now();kPhotos.push({el:ph,born:born});
+requestAnimationFrame(function(){ph.style.opacity='0.8'});
+setTimeout(function(){ph.style.opacity='0';setTimeout(function(){if(ph.parentNode)ph.parentNode.removeChild(ph);kPhotos=kPhotos.filter(function(p){return p.el!==ph})},1500)},4000);
+},2800);
+}
+
+document.getElementById('kuenstlerOv').addEventListener('scroll',function(){
+var st=this.scrollTop,th=1200*window.innerHeight/100,pr=st/th;
+var nw=document.getElementById('kNameWrap'),hr=document.getElementById('kHor'),it=document.getElementById('kITrack'),ct=document.getElementById('kCta');
+if(pr<0.05){nw.style.opacity=1-pr/0.05}else{nw.style.opacity=0}
+var gws=['gw0','gw1','gw2'];
+if(pr>=0.04&&pr<0.10){var gp=(pr-0.04)/0.06,fp=pr>0.08?(pr-0.08)/0.02:0,fs=3+12*Math.min(1,gp);gws.forEach(function(id){var w=document.getElementById(id);w.style.opacity=1-fp;w.style.fontSize=fs+'vw'})}else{gws.forEach(function(id){document.getElementById(id).style.opacity=0})}
+if(pr>=0.10&&pr<=0.90){hr.classList.add('vi');var hp=(pr-0.10)/0.80;it.style.transform='translateX('+-hp*8*84+'vw)';ct.style.display='none';hdr.classList.add('dk');foot.classList.add('dk')}else if(pr<0.10){hr.classList.remove('vi');hdr.classList.remove('dk');foot.classList.remove('dk')}
+if(pr>0.88){hr.classList.remove('vi');ct.style.display='flex';var cp=(pr-0.88)/0.12;ct.style.opacity=cp;ct.style.pointerEvents=cp>0.5?'auto':'none';hdr.classList.add('dk');foot.classList.add('dk')}else{ct.style.opacity=0;ct.style.pointerEvents='none'}
+});
+
+// REFERENZEN parallax
+document.getElementById('kreativeOv').addEventListener('scroll',function(){var vh=window.innerHeight;this.querySelectorAll('[data-kbg]').forEach(function(bg){var s=bg.parentElement,r=s.getBoundingClientRect(),p=(vh-r.top)/(vh+r.height);bg.style.transform='translateY('+((p-0.5)*80)+'px)'})});
+
+// KONTAKT form
+function sendForm(){
+var n=document.getElementById('fName').value,e=document.getElementById('fEmail').value,c=document.getElementById('fCompany').value,m=document.getElementById('fMsg').value;
+var subj=encodeURIComponent('Anfrage KLS'+(c?' – '+c:''));
+var body=encodeURIComponent((n?'Name: '+n+'\n':'')+(e?'E-Mail: '+e+'\n':'')+(c?'Unternehmen: '+c+'\n\n':'\n')+m);
+window.open('mailto:info@kls-art.de?subject='+subj+'&body='+body,'_blank');
+document.getElementById('kontaktForm').style.display='none';document.getElementById('formSuccess').style.display='block';
+}
+
+// CHAT
+var chatMsgs=[{role:'assistant',content:'Willkommen bei KLS — Corporate Art Services. Ich bin Ihr persönlicher Berater für Kunst im Unternehmensraum. Wie kann ich Ihnen helfen?'}];
+var chatLoading=false;
+
+function openChat(){document.getElementById('chatBox').classList.add('av');document.getElementById('chatBtn').style.display='none';renderChat()}
+function closeChat(){document.getElementById('chatBox').classList.remove('av');document.getElementById('chatBtn').style.display='flex'}
+
+function renderChat(){
+var c=document.getElementById('chatMsgs');c.innerHTML='';
+chatMsgs.forEach(function(m){c.innerHTML+='<div class="chat-msg '+(m.role==='user'?'u':'a')+'"><div class="chat-bubble">'+m.content+'</div></div>'});
+if(chatLoading)c.innerHTML+='<div class="chat-msg a"><div class="chat-bubble" style="opacity:0.5">Einen Moment...</div></div>';
+c.scrollTop=c.scrollHeight;
+}
+
+document.getElementById('chatIn').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}});
+document.getElementById('chatIn').addEventListener('input',function(){document.getElementById('chatSend').className=this.value.trim()?'active':''});
+
+async function sendChat(){
+var inp=document.getElementById('chatIn'),msg=inp.value.trim();if(!msg||chatLoading)return;
+inp.value='';chatMsgs.push({role:'user',content:msg});chatLoading=true;renderChat();
+try{
+var sys='Du bist der KI-Berater von KLS — Corporate Art Services. WISSEN: Leasing-Modelle: Einzelwerk (ab 150€/Mo), Raumkonzept (ab 400€/Mo, 3-5 Werke), Gebäudekonzept (individuell). Laufzeiten 6-36 Monate. 100% als Betriebsausgaben absetzbar (§4 Abs.4 EStG). Inklusiv: Transport, Versicherung Nail-to-Nail, Montage, Wartung, Vermittlung, Ankauf-Option. KÜNSTLER: Volker Seifried (Skulptur: Bronze, Stein, Holz), Johannes Weiß (Skulptur: Aluminium, Bronze, studierte bei Prof. Tony Cragg UdK Berlin), Maria Stern (Malerei: Öl, Acryl, Großformat), Lukas Grimm (Installation: Licht, ortsspezifisch). PROZESS: 1) Raumanalyse 2) Kuration 3) Vertrag 4) Installation 5) Betreuung & Rotation. REFERENZEN: Kanzlei Müller & Partner, Hotel Lindenberg, TechVentures GmbH. STIL: Professionell, kompetent, warm. Deutsch. Max 3-4 Sätze. Bei Interesse empfiehl info@kls-art.de oder +49 30 1234 5678.';
+var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:chatMsgs.map(function(m){return{role:m.role,content:m.content}})})});
+var data=await res.json();var reply=data.content?data.content.map(function(c){return c.text||''}).join(''):'Bitte kontaktieren Sie uns unter info@kls-art.de.';
+chatMsgs.push({role:'assistant',content:reply});
+}catch(e){chatMsgs.push({role:'assistant',content:'Technisches Problem. Bitte kontaktieren Sie uns unter info@kls-art.de oder +49 30 1234 5678.'})}
+chatLoading=false;renderChat();
+}
+
+updateNav();
+</script>
+</body>
+</html>
