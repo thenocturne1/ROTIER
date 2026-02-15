@@ -31,12 +31,12 @@ body{font-family:var(--sn);background:#fff;overflow:hidden;height:100vh;width:10
 #main{height:100vh;width:100%;overflow-y:auto;overflow-x:hidden;background:#fff}
 
 /* HERO */
-.hero{min-height:320vh;position:relative;display:flex;flex-direction:column;align-items:center;padding:0 28px}
+.hero{min-height:320vh;position:relative;display:flex;flex-direction:column;align-items:center;padding:0}
 .hero-img{position:absolute;overflow:hidden;z-index:0}
-.hero-img img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
-#heroR{right:0;top:0;width:50vw;height:100vh;opacity:0.9}
-#heroL{left:0;top:100vh;width:50vw;height:100vh;opacity:0;transition:opacity 1.2s ease}
-.hero-center{position:sticky;top:50%;transform:translateY(-50%);width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;z-index:2}
+.hero-img img{width:100%;height:100%;object-fit:cover}
+#heroR{right:0;top:0;width:50vw;height:100vh}
+#heroL{left:0;top:100vh;width:50vw;height:100vh;opacity:1}
+.hero-center{position:sticky;top:50%;transform:translateY(-50%);width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;z-index:2;padding:0 28px}
 .hero-title{font-family:var(--sf);font-size:clamp(72px,22vw,200px);font-weight:400;line-height:0.82;letter-spacing:-0.02em;text-align:center}
 .hero-title i{font-style:italic}
 .hero-sub{font-family:var(--el);font-size:clamp(18px,3vw,32px);font-weight:300;letter-spacing:0.08em;opacity:0.6;margin-top:12px;font-style:italic}
@@ -66,7 +66,7 @@ body{font-family:var(--sn);background:#fff;overflow:hidden;height:100vh;width:10
 /* PARALLAX */
 .par-sec{position:relative;overflow:hidden;background:#f5f5f5;min-height:70vh}
 .par-bg{position:absolute;inset:0;z-index:1}
-.par-bg img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+.par-bg img{width:100%;height:100%;object-fit:cover;}
 .par-ct{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:100px 80px;min-height:70vh}
 .par-ct.ri{align-items:flex-end}
 .par-ct.le{align-items:flex-start}
@@ -124,15 +124,15 @@ body{font-family:var(--sn);background:#fff;overflow:hidden;height:100vh;width:10
 .k-sub{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;opacity:0.4;margin-top:28px}
 .k-photos{position:fixed;inset:0;z-index:10;pointer-events:none;overflow:hidden}
 .k-photo{position:absolute;transition:opacity 1.5s ease}
-.k-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+.k-photo img{width:100%;height:100%;object-fit:cover;}
 .k-grow{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;pointer-events:none;text-align:center;display:flex;flex-direction:column;align-items:center;width:100%}
 .k-grow span{font-family:var(--sf);font-weight:400;letter-spacing:-0.02em;text-transform:uppercase;margin:5px 0;color:#000;line-height:1;display:block}
-.k-hor{position:fixed;inset:0;z-index:30;display:none;align-items:center;overflow:hidden;background:#0a0a0a;pointer-events:none;transition:opacity 0.8s}
+.k-hor{position:fixed;inset:0;z-index:30;display:none;align-items:center;overflow:hidden;background:#0a0a0a;pointer-events:none;opacity:0;transition:opacity 1.2s ease}
 .k-hor.vi{display:flex;opacity:1}
 .k-itrack{display:flex;align-items:center;will-change:transform;gap:4vw;padding:0 10vw}
 .k-panel{flex-shrink:0;height:75vh;position:relative;border-radius:12px;overflow:hidden}
 .k-panel.wi{width:85vw}.k-panel.na{width:75vw}
-.k-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(100%) brightness(0.7)}
+.k-panel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.7)}
 .k-panel::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.2) 50%,transparent 100%);z-index:5}
 .k-panel-ct{position:absolute;bottom:0;left:0;right:0;padding:48px;z-index:10;color:#fff}
 .k-panel-ct.ce{bottom:50%;transform:translateY(50%);text-align:center;padding:48px 64px}
@@ -149,7 +149,7 @@ body{font-family:var(--sn);background:#fff;overflow:hidden;height:100vh;width:10
 /* REFERENZEN */
 .ref-sec{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden}
 .ref-bg{position:absolute;inset:-20% 0;z-index:1;will-change:transform}
-.ref-bg img{width:100%;height:100%;object-fit:cover;filter:grayscale(100%)}
+.ref-bg img{width:100%;height:100%;object-fit:cover;}
 .ref-ct{position:relative;z-index:2;padding:100px 40px;width:100%}
 .ref-card{background:rgba(255,255,255,0.97);padding:48px;max-width:480px;box-shadow:0 12px 48px rgba(0,0,0,0.15)}
 .ref-card.ri{margin-left:auto}
@@ -188,6 +188,33 @@ body{font-family:var(--sn);background:#fff;overflow:hidden;height:100vh;width:10
 .k-ta{width:100%;padding:16px 0;font-size:15px;border:none;border-bottom:1px solid rgba(0,0,0,0.15);background:transparent;font-family:var(--sn);margin-bottom:24px;outline:none;resize:none;min-height:100px}
 .k-ta:focus{border-color:#000}
 #formSuccess{display:none;text-align:center;padding:60px 0}
+
+/* ARTIST DETAIL */
+.art-detail{position:fixed;inset:0;z-index:20000;background:#fff;overflow-y:auto;display:none;-webkit-overflow-scrolling:touch}
+.art-detail.av{display:block}
+.art-detail-hero{height:60vh;position:relative;overflow:hidden}
+.art-detail-hero img{width:100%;height:100%;object-fit:cover}
+.art-detail-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 60%)}
+.art-detail-info{position:absolute;bottom:48px;left:48px;z-index:2;color:#fff}
+.art-detail-num{font-size:11px;letter-spacing:0.3em;opacity:0.5;margin-bottom:12px}
+.art-detail-name{font-family:var(--sf);font-size:clamp(36px,8vw,64px);font-weight:400;letter-spacing:-0.02em;margin-bottom:12px}
+.art-detail-desc{font-size:15px;line-height:1.7;opacity:0.8;max-width:500px}
+.art-detail-tags{display:flex;gap:8px;margin-top:16px}
+.art-detail-tag{padding:6px 14px;border:1px solid rgba(255,255,255,0.3);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.8);border-radius:2px}
+.art-back{position:fixed;top:24px;left:28px;z-index:20001;background:rgba(0,0,0,0.5);color:#fff;border:none;padding:10px 20px;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-family:var(--sn);backdrop-filter:blur(8px);transition:background 0.3s}
+.art-back:hover{background:rgba(0,0,0,0.8)}
+.works-grid{max-width:1200px;margin:0 auto;padding:80px 28px 120px}
+.works-title{font-family:var(--sf);font-size:28px;font-weight:400;margin-bottom:48px;letter-spacing:-0.02em}
+.work-item{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:80px;align-items:center}
+.work-item:nth-child(even){direction:rtl}.work-item:nth-child(even)>*{direction:ltr}
+@media(max-width:768px){.work-item{grid-template-columns:1fr}}
+.work-img{aspect-ratio:4/3;overflow:hidden;border-radius:4px}
+.work-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease}
+.work-item:hover .work-img img{transform:scale(1.03)}
+.work-info{padding:20px 0}
+.work-name{font-family:var(--sf);font-size:22px;font-weight:400;margin-bottom:8px}
+.work-meta{font-size:12px;opacity:0.5;margin-bottom:16px}
+.work-text{font-size:14px;line-height:1.8;opacity:0.7}
 
 /* CHAT */
 #chatBtn{position:fixed;bottom:70px;right:20px;z-index:20000;width:56px;height:56px;border-radius:50%;background:#000;border:none;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center}
@@ -313,7 +340,7 @@ body{font-family:var(--sn);background:#fff;overflow:hidden;height:100vh;width:10
 </div></div>
 
 <!-- REFERENZEN OVERLAY -->
-<div class="ov" id="kreativeOv" id2="kreativeOv"></div>
+<div class="ov" id="kreativeOv"></div>
 
 <!-- LEASING OVERLAY -->
 <div class="ov" id="leasingOv"></div>
@@ -334,17 +361,20 @@ body{font-family:var(--sn);background:#fff;overflow:hidden;height:100vh;width:10
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:60px"><h2 style="font-family:var(--sf);font-size:clamp(36px,8vw,60px);font-weight:300;line-height:1">Impressum</h2><button onclick="document.getElementById('impressum').classList.remove('av')" style="background:none;border:none;font-size:24px;cursor:pointer;opacity:0.4;padding:8px">✕</button></div>
 <div style="display:grid;gap:40px">
 <div><div class="k-label">Angaben gemäß § 5 TMG</div><p class="k-info">KLS — Corporate Art Services<br>Musterstraße 12<br>10999 Berlin</p></div>
-<div><div class="k-label">Kontakt</div><p class="k-info">Telefon: <a href="tel:+493012345678">+49 30 1234 5678</a><br>E-Mail: <a href="mailto:info@kls-art.de">info@kls-art.de</a></p></div>
+<div><div class="k-label">Kontakt</div><p class="k-info">Telefon: <a href="tel:+493012345678">+49 30 1234 5678</a><br>E-Mail: <a href="/cdn-cgi/l/email-protection#b6dfd8d0d9f6dddac59bd7c4c298d2d3"><span class="__cf_email__" data-cfemail="1871767e775873746b35796a6c367c7d">[email&#160;protected]</span></a></p></div>
 <div><div class="k-label">Vertreten durch</div><p class="k-info">Johannes Weiß</p></div>
 <div><div class="k-label">Umsatzsteuer-ID</div><p class="k-info">gemäß §27a UStG: DE XXX XXX XXX</p></div>
 <div><div class="k-label">Haftungsausschluss</div><p style="font-size:14px;line-height:1.8;opacity:0.7">Die Inhalte wurden mit größter Sorgfalt erstellt. Für Richtigkeit, Vollständigkeit und Aktualität können wir keine Gewähr übernehmen.</p></div>
 <div><div class="k-label">Urheberrecht</div><p style="font-size:14px;line-height:1.8;opacity:0.7">Die Inhalte unterliegen dem deutschen Urheberrecht. Vervielfältigung bedarf der schriftlichen Zustimmung.</p></div>
 </div></div></div>
 
+<!-- ARTIST DETAIL -->
+<div class="art-detail" id="artistDetail"></div>
+
 <!-- FOOTER -->
 <div id="foot"><span>© 2026 KLS — Corporate Art Services</span><div class="foot-r"><a href="https://www.instagram.com/kunstleasing.berlin/" target="_blank" rel="noopener noreferrer">Instagram</a><span style="opacity:0.4">·</span><a href="#" onclick="event.preventDefault();document.getElementById('impressum').classList.add('av')">Impressum</a></div></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 var cur='about',hdr=document.getElementById('hdr'),main=document.getElementById('main'),foot=document.getElementById('foot');
 var SF="'Libre Bodoni',Georgia,serif",SN="'DM Sans',sans-serif";
 var photos=["https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=400&q=80","https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80","https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400&q=80","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80","https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=400&q=80"];
@@ -368,10 +398,70 @@ var itrack=document.getElementById('kITrack');
 panels.forEach(function(p){
 var d=document.createElement('div');d.className='k-panel '+(p.w?'wi':'na');
 d.innerHTML='<img src="'+p.img+'">';
-if(p.t==='artist'){d.innerHTML+='<div class="k-panel-ct"><div class="kp-num">'+p.n+'</div><h3 class="kp-name">'+p.nm+'</h3><p class="kp-desc">'+p.d+'</p><div class="kp-tags">'+p.tags.map(function(t){return'<span class="kp-tag">'+t+'</span>'}).join('')+'</div></div>'}
+if(p.t==='artist'){d.innerHTML+='<div class="k-panel-ct"><div class="kp-num">'+p.n+'</div><h3 class="kp-name">'+p.nm+'</h3><p class="kp-desc">'+p.d+'</p><div class="kp-tags">'+p.tags.map(function(t){return'<span class="kp-tag">'+t+'</span>'}).join('')+'</div></div>';d.style.cursor='pointer';d.style.pointerEvents='auto';d.addEventListener('click',function(){openArtist(p.nm)})}
 else{d.innerHTML+='<div class="k-panel-ct ce"><p class="kp-quote">'+p.q+'</p></div>'}
 itrack.appendChild(d);
 });
+
+// ARTIST WORKS DATA
+var artistWorks={
+"Volker Seifried":{
+  img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=1400&q=80",
+  num:"01",desc:"Reduktion auf das Wesentliche. Geometrische Strenge trifft organische Form – Material und Raum im Dialog.",tags:["Bronze","Stein","Holz"],
+  works:[
+    {img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",name:"Tektonik I",meta:"Bronze, 180 × 45 × 45 cm, 2023",text:"Eine aufstrebende Vertikale, die geologische Schichtungen in Bronze übersetzt. Die Oberfläche changiert zwischen polierter Glätte und archaischer Rauheit – ein Dialog zwischen Natur und Gestaltungswille."},
+    {img:"https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800&q=80",name:"Resonanzkörper",meta:"Stein, Marmor, 90 × 60 × 60 cm, 2022",text:"Ausgehöhlter Marmor, der den umgebenden Raum einschließt. Die konkave Innenfläche erzeugt eine akustische Dimension – Skulptur als Klangarchitektur."},
+    {img:"https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=800&q=80",name:"Gefüge III",meta:"Holz, Eiche, 120 × 80 × 40 cm, 2024",text:"Geschichtete Eichenholzlamellen, die sich wie tektonische Platten überlagern. Licht fällt durch die Zwischenräume und zeichnet wechselnde Schattenmuster."},
+    {img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=800&q=80",name:"Schwere und Leichte",meta:"Bronze, Patina, 200 × 35 × 35 cm, 2023",text:"Zwei ineinander verschränkte Formen – die eine massiv und erdgebunden, die andere dünn und schwebend. Die Bronze-Patina erzählt von Zeitlichkeit."},
+    {img:"https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&q=80",name:"Hohlform",meta:"Stein, Basalt, 70 × 70 × 50 cm, 2024",text:"Ein ausgehöhlter Basaltblock, dessen Inneres glatt poliert ist, während die Außenhaut roh belassen wurde. Der Betrachter blickt in einen intimen Innenraum."}
+  ]
+},
+"Johannes Weiß":{
+  img:"https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=1400&q=80",
+  num:"02",desc:"Organische Abstraktion in Aluminium und Bronze. Formen, die Verkörperung und Zeitlichkeit erforschen.",tags:["Aluminium","Bronze","Gips"],
+  works:[
+    {img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",name:"Membran",meta:"Aluminium, 160 × 80 × 60 cm, 2024",text:"Eine biomorphe Hohlform aus geschliffenem Aluminium, die Innen und Außen als Kontinuum erfahrbar macht. Die reflektierende Oberfläche löst die Grenze zwischen Objekt und Umraum auf."},
+    {img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=800&q=80",name:"Torso (Variation)",meta:"Bronze, 140 × 50 × 45 cm, 2023",text:"Abstraktion des menschlichen Körpers, reduziert auf Spannung und Volumen. Die Bronze bewahrt die Spuren des Modellierens – jede Berührung bleibt lesbar."},
+    {img:"https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800&q=80",name:"Faltung",meta:"Aluminium, poliert, 100 × 100 × 30 cm, 2024",text:"Eine flache, sich faltende Aluminium-Ebene, die den Raum einfängt und verzerrt. Wie ein eingefrorener Moment des Werdens – Form im Übergang."},
+    {img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",name:"Zeitkern",meta:"Bronze, Gips-Kern, 90 × 40 × 40 cm, 2023",text:"Bronze umschließt einen rohen Gipskern, der an einer Stelle sichtbar wird. Das Innere der Skulptur – ihr Entstehungsprozess – wird zum eigentlichen Thema."},
+    {img:"https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=800&q=80",name:"Doppelgänger",meta:"Aluminium, 2-teilig, je 120 × 60 × 40 cm, 2025",text:"Zwei nahezu identische Formen, die im Raum zueinander in Beziehung treten. Minimale Abweichungen erzeugen Spannung – wie ein Echo, das nie ganz trifft."}
+  ]
+},
+"Maria Stern":{
+  img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1400&q=80",
+  num:"03",desc:"Abstrakte Farbfelder als Räume emotionaler Tiefe. Großformatige Leinwände für kontemplative Atmosphären.",tags:["Öl","Acryl","Großformat"],
+  works:[
+    {img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&q=80",name:"Tiefenfeld",meta:"Öl auf Leinwand, 240 × 180 cm, 2024",text:"Schichtungen von warmem Ocker und kühlem Grau erzeugen eine räumliche Tiefe, die den Betrachter in das Bild hineinzieht. Die Materialität der Ölfarbe wird selbst zum Erlebnis."},
+    {img:"https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&q=80",name:"Horizont (Blau)",meta:"Acryl auf Leinwand, 200 × 300 cm, 2023",text:"Ein großformatiges Blaufeld, das an seinem oberen Rand in Weiß auflöst. Stille, Weite, Atem – das Bild schafft einen Raum jenseits des Raumes."},
+    {img:"https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=800&q=80",name:"Schichtung VII",meta:"Öl, Mixed Media, 180 × 140 cm, 2024",text:"Sieben lasierend aufgetragene Farbschichten – jede transparent genug, um die darunterliegende durchscheinen zu lassen. Ein archäologisches Bild der Malerei selbst."},
+    {img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",name:"Stille Fläche",meta:"Acryl auf Leinwand, 160 × 160 cm, 2023",text:"Ein nahezu monochromes Quadrat in gebrochenem Weiß, dessen Oberfläche bei wechselndem Licht lebendig wird. Kontemplation als künstlerisches Prinzip."},
+    {img:"https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=800&q=80",name:"Dämmerung",meta:"Öl auf Leinwand, 220 × 180 cm, 2025",text:"Warme Rottöne treffen auf kühles Violett – der Moment zwischen Tag und Nacht, eingefangen in Farbe. Die großzügige Geste des Pinsels bleibt in jeder Schicht sichtbar."}
+  ]
+},
+"Lukas Grimm":{
+  img:"https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=1400&q=80",
+  num:"04",desc:"Raum als Medium, Licht als Material. Ortsspezifische Installationen, die Architektur transformieren.",tags:["Licht","Installation","Ortsspezifisch"],
+  works:[
+    {img:"https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=800&q=80",name:"Lichtschnitt",meta:"LED, Aluminium, ortsspezifisch, 2024",text:"Eine diagonale Lichtlinie durchschneidet den Raum – reduziert Architektur auf ihre Essenz. Die Intensität des Lichts verändert sich im Tagesverlauf und reagiert auf natürliches Licht."},
+    {img:"https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",name:"Raumzeichnung I",meta:"Neon, Kabel, variable Dimensionen, 2023",text:"Sichtbare Kabelführungen und Neonröhren zeichnen unsichtbare Architekturlinien nach. Der Raum wird zum Medium, seine verborgene Geometrie wird lesbar."},
+    {img:"https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80",name:"Puls",meta:"LED-Matrix, Sensoren, 2024",text:"Eine atmende Lichtwand, die auf Bewegung im Raum reagiert. Je mehr Menschen sich nähern, desto schneller pulsiert das Licht – der Raum wird zum lebendigen Organismus."},
+    {img:"https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",name:"Schattenkante",meta:"Projektionsmapping, 2023",text:"Architektonische Kanten und Fugen werden durch präzise Lichtprojektion hervorgehoben. Der bestehende Raum wird nicht verändert, aber radikal neu wahrgenommen."},
+    {img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",name:"Frequenz",meta:"LED, Sound, variable Dimensionen, 2025",text:"Eine raumfüllende Installation aus vertikalen Lichtlinien, deren Frequenz und Farbe durch einen Algorithmus gesteuert wird. Klang und Licht verschmelzen zu einer synästhetischen Erfahrung."}
+  ]
+}
+};
+
+function openArtist(name){
+var a=artistWorks[name];if(!a)return;
+var el=document.getElementById('artistDetail');
+el.innerHTML='<button class="art-back" onclick="closeArtist()">← Zurück</button>'+
+'<div class="art-detail-hero"><img src="'+a.img+'"><div class="art-detail-info"><div class="art-detail-num">'+a.num+'</div><h2 class="art-detail-name">'+name+'</h2><p class="art-detail-desc">'+a.desc+'</p><div class="art-detail-tags">'+a.tags.map(function(t){return'<span class="art-detail-tag">'+t+'</span>'}).join('')+'</div></div></div>'+
+'<div class="works-grid"><h3 class="works-title">Ausgewählte Werke</h3>'+
+a.works.map(function(w){return'<div class="work-item"><div class="work-img"><img src="'+w.img+'"></div><div class="work-info"><h4 class="work-name">'+w.name+'</h4><p class="work-meta">'+w.meta+'</p><p class="work-text">'+w.text+'</p></div></div>'}).join('')+
+'<div style="text-align:center;padding:40px 0 80px"><button class="cta-btn inv" onclick="closeArtist();go(\'kontakt\',{portfolio:true})">Werke anfragen</button></div></div>';
+el.classList.add('av');el.scrollTop=0;
+}
+function closeArtist(){document.getElementById('artistDetail').classList.remove('av')}
 
 // BUILD REFERENZEN
 var refs=[
@@ -414,7 +504,6 @@ main.addEventListener('scroll',function(){
 var st=this.scrollTop,vh=window.innerHeight,pr=st/(320*vh/100);
 var idx=Math.min(2,Math.floor(pr*3));
 ['i0','i1','i2'].forEach(function(id,i){document.getElementById(id).classList.toggle('av',i===idx)});
-document.getElementById('heroL').style.opacity=pr>0.3?0.9:0;
 var sz=document.getElementById('stZone'),r=sz.getBoundingClientRect();
 if(r.top<vh&&r.bottom>0){var sp=(vh-r.top)/(vh+r.height);for(var i=0;i<3;i++){var l=document.getElementById('s'+i),ls=0.2+i*0.15,le=ls+0.2;if(sp>ls&&sp<le)l.style.opacity=Math.min(1,(sp-ls)/0.1);else if(sp>=le)l.style.opacity=Math.max(0,1-(sp-le)/0.1);else l.style.opacity=0}}
 document.querySelectorAll('[data-parbg]').forEach(function(bg){var s=bg.parentElement,rc=s.getBoundingClientRect(),p=(vh-rc.top)/(vh+rc.height);bg.style.transform='translateY('+((p-0.5)*80)+'px)'});
@@ -424,7 +513,12 @@ document.querySelectorAll('[data-parbg]').forEach(function(bg){var s=bg.parentEl
 var kFlicker,kPhotoInt,kPhotos=[];
 function initKuenstler(){
 var ne=document.getElementById('kName'),t='DIE KÜNSTLER';ne.innerHTML='';
-t.split('').forEach(function(c,i){if(c===' '){ne.innerHTML+='<span style="display:inline-block;width:0.25em"></span>'}else{var s=document.createElement('span');s.className='k-letter';s.textContent=c;s.style.fontFamily=SF;ne.appendChild(s)}});
+var line1=document.createElement('div');line1.style.marginBottom='0.05em';
+'DIE'.split('').forEach(function(c,i){var s=document.createElement('span');s.className='k-letter';s.textContent=c;s.style.fontFamily=SF;line1.appendChild(s)});
+ne.appendChild(line1);
+var line2=document.createElement('div');
+'KÜNSTLER'.split('').forEach(function(c,i){var s=document.createElement('span');s.className='k-letter';s.textContent=c;s.style.fontFamily=SF;line2.appendChild(s)});
+ne.appendChild(line2);
 clearInterval(kFlicker);clearInterval(kPhotoInt);
 kFlicker=setInterval(function(){if(cur!=='kuenstler'){clearInterval(kFlicker);return}
 var ls=document.querySelectorAll('.k-letter');var r=Math.floor(Math.random()*ls.length);
@@ -434,7 +528,7 @@ var positions=[{x:3,y:5,rx:12,ry:25},{x:55,y:50,rx:15,ry:20},{x:25,y:15,rx:20,ry
 kPhotoInt=setInterval(function(){if(cur!=='kuenstler'){clearInterval(kPhotoInt);return}
 if(kPhotos.length>=3)return;
 var pos=positions[kPhotos.length];var px=pos.x+Math.random()*pos.rx,py=pos.y+Math.random()*pos.ry;
-var sz=200+Math.random()*160;
+var sz=280+Math.random()*200;
 var ph=document.createElement('div');ph.className='k-photo';ph.style.cssText='left:'+px+'%;top:'+py+'%;width:'+sz+'px;height:'+(sz*1.2)+'px;opacity:0';
 ph.innerHTML='<img src="'+photos[Math.floor(Math.random()*photos.length)]+'">';
 document.getElementById('kPhotos').appendChild(ph);
@@ -450,7 +544,7 @@ var nw=document.getElementById('kNameWrap'),hr=document.getElementById('kHor'),i
 if(pr<0.05){nw.style.opacity=1-pr/0.05}else{nw.style.opacity=0}
 var gws=['gw0','gw1','gw2'];
 if(pr>=0.04&&pr<0.10){var gp=(pr-0.04)/0.06,fp=pr>0.08?(pr-0.08)/0.02:0,fs=3+12*Math.min(1,gp);gws.forEach(function(id){var w=document.getElementById(id);w.style.opacity=1-fp;w.style.fontSize=fs+'vw'})}else{gws.forEach(function(id){document.getElementById(id).style.opacity=0})}
-if(pr>=0.10&&pr<=0.90){hr.classList.add('vi');var hp=(pr-0.10)/0.80;it.style.transform='translateX('+-hp*8*84+'vw)';ct.style.display='none';hdr.classList.add('dk');foot.classList.add('dk')}else if(pr<0.10){hr.classList.remove('vi');hdr.classList.remove('dk');foot.classList.remove('dk')}
+if(pr>=0.08&&pr<=0.90){hr.classList.add('vi');var hp=(pr-0.10)/0.80;if(hp<0)hp=0;var fadeIn=Math.min(1,(pr-0.08)/0.04);hr.style.opacity=fadeIn;it.style.transform='translateX('+(-hp*8*84)+'vw)';hr.style.pointerEvents='auto';ct.style.display='none';hdr.classList.add('dk');foot.classList.add('dk')}else if(pr<0.08){hr.classList.remove('vi');hr.style.opacity=0;hr.style.pointerEvents='none';hdr.classList.remove('dk');foot.classList.remove('dk')}
 if(pr>0.88){hr.classList.remove('vi');ct.style.display='flex';var cp=(pr-0.88)/0.12;ct.style.opacity=cp;ct.style.pointerEvents=cp>0.5?'auto':'none';hdr.classList.add('dk');foot.classList.add('dk')}else{ct.style.opacity=0;ct.style.pointerEvents='none'}
 });
 
@@ -483,19 +577,48 @@ c.scrollTop=c.scrollHeight;
 document.getElementById('chatIn').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}});
 document.getElementById('chatIn').addEventListener('input',function(){document.getElementById('chatSend').className=this.value.trim()?'active':''});
 
+// Platzhalter für den API Key
+var ANTHROPIC_API_KEY = ''; // Hier Ihren API Key eintragen
+
 async function sendChat(){
 var inp=document.getElementById('chatIn'),msg=inp.value.trim();if(!msg||chatLoading)return;
 inp.value='';chatMsgs.push({role:'user',content:msg});chatLoading=true;renderChat();
-try{
-var sys='Du bist der KI-Berater von KLS — Corporate Art Services. WISSEN: Leasing-Modelle: Einzelwerk (ab 150€/Mo), Raumkonzept (ab 400€/Mo, 3-5 Werke), Gebäudekonzept (individuell). Laufzeiten 6-36 Monate. 100% als Betriebsausgaben absetzbar (§4 Abs.4 EStG). Inklusiv: Transport, Versicherung Nail-to-Nail, Montage, Wartung, Vermittlung, Ankauf-Option. KÜNSTLER: Volker Seifried (Skulptur: Bronze, Stein, Holz), Johannes Weiß (Skulptur: Aluminium, Bronze, studierte bei Prof. Tony Cragg UdK Berlin), Maria Stern (Malerei: Öl, Acryl, Großformat), Lukas Grimm (Installation: Licht, ortsspezifisch). PROZESS: 1) Raumanalyse 2) Kuration 3) Vertrag 4) Installation 5) Betreuung & Rotation. REFERENZEN: Kanzlei Müller & Partner, Hotel Lindenberg, TechVentures GmbH. STIL: Professionell, kompetent, warm. Deutsch. Max 3-4 Sätze. Bei Interesse empfiehl info@kls-art.de oder +49 30 1234 5678.';
-var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:chatMsgs.map(function(m){return{role:m.role,content:m.content}})})});
-var data=await res.json();var reply=data.content?data.content.map(function(c){return c.text||''}).join(''):'Bitte kontaktieren Sie uns unter info@kls-art.de.';
-chatMsgs.push({role:'assistant',content:reply});
-}catch(e){chatMsgs.push({role:'assistant',content:'Technisches Problem. Bitte kontaktieren Sie uns unter info@kls-art.de oder +49 30 1234 5678.'})}
-chatLoading=false;renderChat();
+
+// Fallback falls kein Key vorhanden ist
+if(!ANTHROPIC_API_KEY) {
+    setTimeout(() => {
+        chatMsgs.push({role:'assistant', content: 'Vielen Dank für Ihre Nachricht. Um die KI-Funktion zu nutzen, bitte ich Sie, einen gültigen API-Key im Code einzufügen. Für direkte Anfragen erreichen Sie uns unter info@kls-art.de.'});
+        chatLoading=false;
+        renderChat();
+    }, 1000);
+    return;
 }
 
-updateNav();
+try{
+var sys='Du bist der KI-Berater von KLS — Corporate Art Services. WISSEN: Leasing-Modelle: Einzelwerk (ab 150€/Mo), Raumkonzept (ab 400€/Mo, 3-5 Werke), Gebäudekonzept (individuell). Laufzeiten 6-36 Monate. 100% als Betriebsausgaben absetzbar (§4 Abs.4 EStG). Inklusiv: Transport, Versicherung Nail-to-Nail, Montage, Wartung, Vermittlung, Ankauf-Option. KÜNSTLER: Volker Seifried (Skulptur: Bronze, Stein, Holz), Johannes Weiß (Skulptur: Aluminium, Bronze, studierte bei Prof. Tony Cragg UdK Berlin), Maria Stern (Malerei: Öl, Acryl, Großformat), Lukas Grimm (Installation: Licht, ortsspezifisch). PROZESS: 1) Raumanalyse 2) Kuration 3) Vertrag 4) Installation 5) Betreuung & Rotation. REFERENZEN: Kanzlei Müller & Partner, Hotel Lindenberg, TechVentures GmbH. STIL: Professionell, kompetent, warm. Deutsch. Max 3-4 Sätze. Bei Interesse empfiehl info@kls-art.de oder +49 30 1234 5678.';
+var res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+        'Content-Type':'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01' 
+    },
+    body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:sys,
+        messages:chatMsgs.filter(m => m.role !== 'system').map(function(m){return{role:m.role,content:m.content}})
+    })
+});
+var data=await res.json(); 
+var reply=data.content?data.content.map(function(c){return c.text||''}).join(''):'Bitte kontaktieren Sie uns unter info@kls-art.de.';
+chatMsgs.push({role:'assistant', content: reply});
+}catch(err){
+    chatMsgs.push({role:'assistant', content: 'Es gab einen Fehler bei der Verbindung. Bitte versuchen Sie es später erneut.'});
+}
+chatLoading=false;
+renderChat();
+}
 </script>
 </body>
 </html>
